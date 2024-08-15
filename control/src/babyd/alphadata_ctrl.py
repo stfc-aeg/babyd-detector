@@ -3,8 +3,8 @@ import logging
 
 from odin.adapters.parameter_tree import ParameterTree, ParameterTreeError
 
-from BabyD.adxdma import adxdma, AdxdmaException, Register, DetailedRegister, BitMapEntry
-from BabyD.RegisterMapper import RegisterMapper
+from babyd.adxdma import adxdma, AdxdmaException, Register, DetailedRegister, BitMapEntry
+from babyd.RegisterMapper import RegisterMapper
 
 from functools import partial
 import struct

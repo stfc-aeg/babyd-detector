@@ -7,7 +7,7 @@ import sys
 import struct
 from functools import partial
 
-from BabyD.xdma import xdma, XdmaException
+from babyd.xdma import xdma, XdmaException
 # import struct
 
 

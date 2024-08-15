@@ -4,8 +4,8 @@ from odin.adapters.parameter_tree import ParameterTree, ParameterTreeError
 from odin.util import decode_request_body
 
 
-from BabyD.alphadata_ctrl import AlphaDataController
-from BabyD.adxdma import AdxdmaException
+from babyd.alphadata_ctrl import AlphaDataController
+from babyd.adxdma import AdxdmaException
 
 
 class BaseAdapter(ApiAdapter):

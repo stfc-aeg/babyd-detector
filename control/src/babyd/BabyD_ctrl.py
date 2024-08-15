@@ -1,6 +1,6 @@
 from odin.adapters.parameter_tree import ParameterTreeError
 
-from BabyD.alphadata_ctrl import AlphaDataController
+from babyd.alphadata_ctrl import AlphaDataController
 from functools import partial
 import struct
 

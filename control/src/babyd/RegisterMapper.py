@@ -1,4 +1,4 @@
-from BabyD.adxdma import adxdma, AdxdmaException, Register, DetailedRegister, BitMapEntry
+from babyd.adxdma import adxdma, AdxdmaException, Register
 
 
 import csv
@@ -73,7 +73,7 @@ class RegisterMapper():
             return text[:-len(suffix)]
 
 
-class RegisterMapperJson(RegisterMapper):
+class RegisterMapperJson():
 
     def __init__(self, file_path, reg_name_prefix="\w*_C_REG_([A-Z]+)_(\w+)_[ABE]"):
         self.json_dict = {}

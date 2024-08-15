@@ -9,7 +9,7 @@ with open('requirements.txt') as f:
 
 
 required.append("cffi>=1.0.0")
-setup(name='BabyD',
+setup(name='babyd',
     #   version=versioneer.get_versions(),
     #   cmdclass=versioneer.get_cmdclass(),
       description='ODIN Baby D',
