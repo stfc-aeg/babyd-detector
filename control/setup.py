@@ -1,7 +1,25 @@
-from setuptools import setup
+"""Setup script for Baby D Python package"""
+
+import sys
+from setuptools import setup, find_packages
 import versioneer
 
-setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
+
+
+required.append("cffi>=1.0.0")
+setup(name='BabyD',
+    #   version=versioneer.get_versions(),
+    #   cmdclass=versioneer.get_cmdclass(),
+      description='ODIN Baby D',
+      url='https://github.com/stfc-aeg',
+      author='Ashley Neaves',
+      author_email='ashley.neaves@stfc.ac.uk',
+      packages=find_packages('src'),
+      package_dir={'': 'src'},
+      setup_requires=["cffi>=1.0.0"],
+      cffi_modules=["../lib/pyxdma_builder.py:ffibuilder"],
+      install_requires=required,
+      zip_safe=False
 )
