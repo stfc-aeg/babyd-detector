@@ -5,17 +5,12 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack';
 import Container from 'react-bootstrap/Container';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
 import Modal from 'react-bootstrap/Modal';
 
+import {WithEndpoint} from "odin-react";
 
-import {WithEndpoint, ToggleSwitch} from "odin-react";
-
-import styles from './App.css'
 
 const EndpointButton = WithEndpoint(Button);
-const EndpointToggle = WithEndpoint(ToggleSwitch);
 const EndpointInput = WithEndpoint(Form.Control);
 
 
@@ -125,23 +120,6 @@ export function DetailedRegisterDisplay(props) {
 
         changeData(new_data);
     }
-
-    // const popover = (
-    //     <Popover id={name + "_popover"} >
-    //         <Popover.Header>Fields</Popover.Header>
-    //         <Popover.Body>
-    //             {fields ? Object.keys(fields).map((field, i) => (
-    //                 <InputGroup>
-    //                     <InputGroup.Text>{field}</InputGroup.Text>
-    //                     <EndpointInput endpoint={endpoint} event_type="change"
-    //                                    fullpath={name + "/fields/" + field}
-    //                                    disabled={readOnly}/>
-    //                 </InputGroup>
-                
-    //             )) : <></>}
-    //         </Popover.Body>
-    //     </Popover>
-    //         )
 
     return (
         <>

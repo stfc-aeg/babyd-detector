@@ -5,7 +5,7 @@ import 'odin-react/dist/index.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-import {OdinApp, TitleCard, WithEndpoint, StatusBox, ToggleSwitch, DropdownSelector} from 'odin-react';
+import {OdinApp, TitleCard, WithEndpoint, StatusBox, DropdownSelector} from 'odin-react';
 import {useAdapterEndpoint} from 'odin-react';
 
 import Container from 'react-bootstrap/Container';
@@ -15,14 +15,11 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import InputGroup from 'react-bootstrap/InputGroup';
-import Accordion from 'react-bootstrap/Accordion';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 import {RegisterDisplay, DetailedRegisterDisplay} from './RegisterDisplay';
 
-const EndpointInput = WithEndpoint(Form.Control);
 const EndpointButton = WithEndpoint(Button);
-const EndpointCheck = WithEndpoint(Form.Check);
 const EndpointDropdown = WithEndpoint(DropdownSelector);
 
 
@@ -96,15 +93,6 @@ function App() {
       return comp;
   }
 
-  // const register_filler = (width) => {
-  //   let filler_list = [];
-  //   for(let i = width; i < reg_columns; i ++)
-  //   {
-  //     filler_list.push((<Col></Col>));
-  //   }
-  //   return filler_list;
-  // }
-
   const get_reg_list = (endpoint, reg_name) => {
     console.log("Getting register map for " + reg_name);
     return endpoint?.data[reg_name] ? reshape_register_array(get_sorted_register_list(endpoint.data[reg_name]), reg_columns).map(
@@ -164,9 +152,6 @@ function App() {
           <TitleCard title="Digest">
             <RegisterDisplay register_name="Digest" register_data={alphadata_endpoint.data?.control?.digest || [0]} 
                              readOnly={false} endpoint={alphadata_endpoint} fullpath="digest"/>
-            {/* <RegisterDisplay register_name="DNA" register_data={alphadata_endpoint.data?.registers?.dna.value || [0]}
-                             readOnly={true} />*/} {/*endpoint info only needed for writabele registers */}
-
           </TitleCard>
           <TitleCard title="IP Address">
             <Row>
@@ -191,18 +176,6 @@ function App() {
             </Row>
           </TitleCard>
           <TitleCard title="Clock Speed">
-              {/* <ButtonGroup>
-                <EndpointButton endpoint={alphadata_endpoint} event_type="click" fullpath="data_rate" value={14}
-                                variant={alphadata_endpoint.data?.data_rate === 14 ? "success" : "secondary"}>
-                  {alphadata_endpoint.data?.data_rate === 14 ? <i class="bi bi-check-lg"></i> : <></>}
-                  14 Gbps
-                </EndpointButton>
-                <EndpointButton endpoint={alphadata_endpoint} event_type="click" fullpath="data_rate" value={7}
-                                variant={alphadata_endpoint.data?.data_rate === 7 ? "success" : "secondary"}>
-                  {alphadata_endpoint.data?.data_rate === 7 ? <i class="bi bi-check-lg"></i> : <></>}
-                  7 Gbps
-                </EndpointButton>
-              </ButtonGroup> */}
               <EndpointDropdown endpoint={alphadata_endpoint} event_type="select" fullpath="clock_speed/speed"
                                 buttonText={alphadata_endpoint.data?.control?.clock_speed.speed || "Unknown"}>
 

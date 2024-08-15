@@ -125,13 +125,10 @@ class adxdma(xdma):
             raise AdxdmaException(lib.ADXDMA_DEVICE_NOT_FOUND)
         if word_size == 4:
             struct_string = "I"  # 4 byte word
-            buf_string = "uint32_t[]"
         elif word_size == 2:
             struct_string = "H"  # 2 byte word
-            buf_string = "uint16_t[]"
         else:
             struct_string = "B"  # 1 byte word
-            buf_string = "uint8_t[]"
         byte_data = struct.pack("@" + (struct_string * len(value)), *value)
         logging.debug(byte_data)
 
@@ -144,8 +141,6 @@ class adxdma(xdma):
         logging.debug("Performing Write at {} of length {}, with a word length of {}".format(addr, byte_data, word_size))
         logging.debug("The start of data is aligned? {}".format(addr % word_size))
         logging.debug("The End of data is aligned?   {}".format((addr + length) % word_size))
-
-
 
         status = lib.ADXDMA_WriteWindow(self.window[0], 0, word_size, addr, length, point, complete)
         if status >= 0x100:
@@ -340,9 +335,9 @@ class DetailedRegister():
                 return
             # get mask for just the bits we're interested in
             mask = ~(~0 << hi << 1) & (~0 << lo)
-            #get original val
+            # get original val
             org_val = reg_val & mask
-            #XOR orignal val, to set all bits we're interested in to zero
+            # XOR orignal val, to set all bits we're interested in to zero
             reg_val = reg_val ^ org_val
             # or with new val to set the required bits
             reg_val = reg_val | (value << lo)
@@ -374,36 +369,3 @@ class DetailedRegister():
     def get_bitmap(self):
         return self.bitmap
 
-
-if __name__ == "__main__":
-    print("oooo test")
-
-    logger = logging.getLogger(__name__)
-    logging.basicConfig(level=logging.DEBUG)
-    # np.set_printoptions(formatter={"int":hex})
-
-    libClass = adxdma()
-
-    libClass.connect()
-    libClass._openWindow()
-
-    info = libClass.get_device_info()
-    logger.debug(info)
-
-    if sys.argv[1].startswith("0x"):
-        addr = int(sys.argv[1][2:], 16)
-    else:
-        addr = int(sys.argv[1])
-
-    if sys.argv[2].startswith("0x"):
-        length = int(sys.argv[2][2:], 16)
-    else:
-        length = int(sys.argv[2])
-
-    buf = libClass.readFromWindow(addr, length)
-    with np.printoptions(formatter={"int": hex}):
-        logger.debug(buf)
-        # logger.debug(buf.astype(np.uint8).tostring().decode("ascii"))
-
-    libClass._closeWindow()
-    libClass.disconnect()

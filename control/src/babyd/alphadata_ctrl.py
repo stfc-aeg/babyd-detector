@@ -1,16 +1,13 @@
 
 import logging
 
-from odin.adapters.parameter_tree import ParameterTree, ParameterTreeError
+from odin.adapters.parameter_tree import ParameterTree
 
-from babyd.adxdma import adxdma, AdxdmaException, Register, DetailedRegister, BitMapEntry
-from babyd.RegisterMapper import RegisterMapper
+from babyd.adxdma import adxdma, Register
 
 from functools import partial
 import struct
-import numpy as np
 import json
-from xdma_cffi import ffi, lib
 
 
 class AlphaDataController():

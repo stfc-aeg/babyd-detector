@@ -1,6 +1,5 @@
-from odin.adapters.adapter import (ApiAdapter, ApiAdapterRequest, ApiAdapterResponse,
-                                   request_types, response_types)
-from odin.adapters.parameter_tree import ParameterTree, ParameterTreeError
+from odin.adapters.adapter import (ApiAdapter, ApiAdapterResponse, response_types)
+from odin.adapters.parameter_tree import ParameterTreeError
 from odin.util import decode_request_body
 
 
