@@ -10,8 +10,8 @@ with open('requirements.txt') as f:
 
 required.append("cffi>=1.0.0")
 setup(name='BabyD',
-      version=versioneer.get_versions(),
-      cmdclass=versioneer.get_cmdclass(),
+    #   version=versioneer.get_versions(),
+    #   cmdclass=versioneer.get_cmdclass(),
       description='ODIN Baby D',
       url='https://github.com/stfc-aeg',
       author='Ashley Neaves',
