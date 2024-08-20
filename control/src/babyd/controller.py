@@ -107,7 +107,6 @@ class BabyDController:
     def execute_captures(self, value=None):
         """Check if captures are already being executed and start if not, check relevant parts of system and datapaths
         are ready for capturing"""
-        # Check if Loki is ready
         if not self.loki_params.loki_ready:
             logging.error("Loki is not ready, Aborting capture execution")
             self.executing = False

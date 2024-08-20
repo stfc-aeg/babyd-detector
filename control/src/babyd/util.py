@@ -34,6 +34,7 @@ def iac_set(adapter, path, *args):
     :param adapter: Adapter object to target
     :param path: Parameter tree path to target, to not include the parameter itself
     :param *args: Accepts either a key-value pair (param, data) or a dictionary of key-value pairs
+    :return: The response object from the target
 
     Example usage :\n
     self.iac_set(self.adapters.munir, 'args/', 'file_path', '/tmp')\n

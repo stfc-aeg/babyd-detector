@@ -25,6 +25,9 @@ class LOKI_Params:
                 return None
         return data
 
+# Have a poll interval to update the state from a single IAC get and use that instead of 
+# calling iac_get everytime a param is accessed?
+
     @property
     def loki_connected(self):
         return self._get_from_system_state('MAIN_EN')
@@ -63,3 +66,10 @@ class LOKI_Params:
         sync = self._system_state.get('SYNC')
         
         return all([main_en, bd_initialise_done, sync])
+    
+
+
+# Make controller handle updating of loki params
+# Have updating of iac adapters handled in executor
+# Have the execting function called in executor
+# Use a state machine to handle the calling of captures
