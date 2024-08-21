@@ -48,3 +48,6 @@ class BabyDAdapter(ApiAdapter):
             status_code = 400
 
         return ApiAdapterResponse(response, content_type=content_type, status_code=status_code)
+    
+    def cleanup(self):
+        self.BabyDController.cleanup()
