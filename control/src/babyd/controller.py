@@ -103,10 +103,13 @@ class BabyDController:
         while self.background_task_en:
             self.update_loki_state()
             time.sleep(0.2)  # Polling interval
+            # Use the executing variable to act as trigger to begin captures
             if self.executing:
-                logging.debug("Telling statemachine to start transitions")
-                self.state_machine.start_preparing()
-            #reset to false
+                if self.capture_manager.has_captures():
+                    logging.debug("Telling statemachine to begin")
+                    self.state_machine.start_preparing()
+                else:
+                    logging.debug("No captures in the capture manager")
             self.executing = False
 
     # def poll_file_writing(self):
