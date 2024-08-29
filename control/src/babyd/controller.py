@@ -16,7 +16,7 @@ class BabyDController:
     """Class to manage the other adapters in the system."""
     executor = ThreadPoolExecutor(max_workers=1) 
 
-    def __init__(self):
+    def __init__(self, options):
         """Initialize the controller object."""
         # Initialize the parameter tree and adapter dataclass after adapters are loaded
         self.adapters = None
@@ -44,12 +44,9 @@ class BabyDController:
         self.loki_params = LokiParams(self.adapters.loki_proxy)
         self.capture_manager = CaptureManager(self.adapters.munir, self.frame_rate)
         self.state_machine = CaptureStateMachine(self.capture_manager)
+
+        self.get_munir_args()
         self.background_task()
-
-        args = {'file_path':'/tmp/josh', 'file_name':'2108_0911_1', 'num_frames':12345}
-        iac_set(self.adapters.munir, 'subsystems/babyd/args/', args)
-
-        #grab munir default params here so that below paramtree holds valid settings if none are provided?
 
         def get_arg(name):
             return getattr(self, name)
@@ -59,17 +56,13 @@ class BabyDController:
 
         def arg_param(name):
             return (partial(get_arg, name), partial(set_arg, name))
-        
-        # lambda value: setattr(self.loki_params, 'loki_connected', value))
-        # partial(self.set_loki_state,'MAIN_EN')
-        # lambda value: self.set_loki_state('MAIN_EN', value)
 
         loki_tree = ParameterTree({
-                'connected': (lambda: self.loki_params.loki_connected, lambda value: self.set_loki_state('MAIN_EN', value)),
-                'initialised': (lambda: self.loki_params.loki_initialised, partial(self.set_loki_state,'BD_INITIALISE/TRIGGER')),
-                'sync': (lambda: self.loki_params.loki_sync, partial(self.set_loki_state,'SYNC')),
-                'ready': (lambda: self.loki_params.loki_ready, None)
-            })
+            'connected': (lambda: self.loki_params.loki_connected, lambda value: setattr(self.loki_params, 'loki_connected', value)),
+            'initialised': (lambda: self.loki_params.loki_initialised, lambda value: setattr(self.loki_params, 'loki_initialised', value)),
+            'sync': (lambda: self.loki_params.loki_sync, lambda value: setattr(self.loki_params, 'loki_sync', value)),
+            'ready': (lambda: self.loki_params.loki_ready, None)
+        })
 
         munir_tree = ParameterTree({
             'args': {
@@ -78,10 +71,13 @@ class BabyDController:
                 ]
             },
             'captures': (self.capture_manager.get_capture_list, None),
-            'stage_capture': (lambda: None, self.stage_capture),
+            'stage_capture': (lambda: None, lambda value: self.capture_manager.add_capture(
+                    self.file_path, self.file_name, self.num_intervals, self.delay, 
+                    self.frame_based_capture, value
+                )),
             'execute': (lambda: self.executing, self.execute_captures),
-            'remove_capture': (lambda: None, self.remove_capture),
-            'duplicate_capture': (lambda: None, self.duplicate_capture)
+            'remove_capture': (lambda: None, self.capture_manager.remove_capture),
+            'duplicate_capture': (lambda: None, self.capture_manager.duplicate_capture)
         })
 
         self.param_tree = ParameterTree({
@@ -95,11 +91,13 @@ class BabyDController:
 
     def set(self, path, data):
         """Set parameters in the parameter tree of the controller."""
+        if 'file_name' in data:
+            data['file_name'] = data['file_name'].split('.')[0]
         self.param_tree.set(path, data)
     
     @run_on_executor
     def background_task(self):
-        """Background task that periodically updates Loki state."""
+        """Background task that periodically updates Loki state and starts executing captures if ."""
         while self.background_task_en:
             self.update_loki_state()
             time.sleep(0.2)  # Polling interval
@@ -111,19 +109,6 @@ class BabyDController:
                 else:
                     logging.debug("No captures in the capture manager")
             self.executing = False
-
-    # def poll_file_writing(self):
-    #     """Wait until the current capture has finished being written to file."""
-    #     logging.debug(f"Returned: {iac_get(self.adapters.munir, 'subsystems/babyd/status/frames_written')}")
-    #     while iac_get(self.adapters.munir, 'subsystems/babyd/status/executing'):
-    #         logging.debug("Waiting for file writing")
-    #         time.sleep(1)
-
-    def set_on_munir(self, path, name, frames):
-        iac_set(self.adapters.munir, 'subsystems/babyd/args/', 'file_path', path)
-        iac_set(self.adapters.munir, 'subsystems/babyd/args/', 'file_name', name)
-        iac_set(self.adapters.munir, 'subsystems/babyd/args/', 'num_frames', frames)
-        iac_set(self.adapters.munir, 'execute', 'babyd', True)
 
     def execute_captures(self, value=None):
         """Check if captures are already being executed and start if not, check relevant parts of system and datapaths
@@ -168,29 +153,17 @@ class BabyDController:
     #     # iac_set(self.adapters.munir, "subsystems/babyd/", "stop_execute", True)
     #     self.executing = False
 
-    def stage_capture(self, value=None):
-        """Stage a new capture with current parameters."""
-        self.capture_manager.add_capture(
-            self.file_path, self.file_name, self.num_intervals, self.delay, self.frame_based_capture
-        )
-
-    def remove_capture(self, capture_id):
-        """Remove a capture from the queue by ID."""
-        self.capture_manager.remove_capture(capture_id)
-
-    def duplicate_capture(self, capture_id):
-        """Duplicate a capture from the queue by ID."""
-        self.capture_manager.duplicate_capture(capture_id)
-
     def update_loki_state(self):
         """Update the Loki state by performing an IAC GET."""
         params = iac_get(self.adapters.loki_proxy, "node_1/application/system_state")
         self.loki_params.update_system_state(params)
 
-    def set_loki_state(self, param, value):
-        """Set a value in the Loki state and update the system state."""
-        path = f'node_1/application/system_state/'
-        iac_set(self.adapters.loki_proxy, path, param, value)
+    def get_munir_args(self):
+        """Get the latest args from munir, and apply them to own params"""
+        args = iac_get(self.adapters.munir, "subsystems/babyd/args")
+        self.file_name = args['file_name']
+        self.file_path = args['file_path']
+        self.num_intervals = args['num_frames']
 
     def cleanup(self):
         """Cleanly shutdown adapter services"""

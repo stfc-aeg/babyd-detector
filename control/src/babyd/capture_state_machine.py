@@ -1,7 +1,6 @@
-import time
-import logging
 from statemachine import State, StateMachine
-from tornado.concurrent import run_on_executor
+import logging
+import time
 
 from .capture_manager import CaptureManager, Capture
 
@@ -13,10 +12,10 @@ class CaptureStateMachine(StateMachine):
     writing = State('Writing')
 
     # transitions between the states
-    start_preparing = idle.to(preparing) | writing.to(preparing)
+    start_preparing = idle.to(preparing) | writing.to(preparing) #Two transitions possible for start_preparing
     start_executing = preparing.to(executing)
     writing_file = executing.to(writing)
-    return_to_idle = writing.to(idle) 
+    return_to_idle = writing.to(idle)
     abort = preparing.to(idle)
 
     def __init__(self, capture_manager):

@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 
+from odin.adapters.proxy import ProxyAdapter
+
+from .util import iac_set
+
 @dataclass
 class LokiParams:
+    _loki_proxy: ProxyAdapter
     _system_state: dict = None
 
     def update_system_state(self, params):
@@ -21,14 +26,32 @@ class LokiParams:
     @property
     def loki_connected(self):
         return self._get_from_system_state('MAIN_EN')
+    
+    @loki_connected.setter
+    def loki_connected(self, value):
+        path = 'node_1/application/system_state/'
+        param = 'MAIN_EN'
+        iac_set(self._loki_proxy, path, param, value)
 
     @property
     def loki_initialised(self):
         return self._get_from_system_state('BD_INITIALISE', 'DONE')
+    
+    @loki_initialised.setter
+    def loki_initialised(self, value):
+        path = 'node_1/application/system_state/BD_INITIALISE/'
+        param = 'TRIGGER'
+        iac_set(self._loki_proxy, path, param, value)
 
     @property
     def loki_sync(self):
         return self._get_from_system_state('SYNC')
+    
+    @loki_sync.setter
+    def loki_sync(self, value):
+        path = 'node_1/application/system_state/'
+        param = 'SYNC'
+        iac_set(self._loki_proxy, path, param, value)
 
     @property
     def loki_ready(self):
