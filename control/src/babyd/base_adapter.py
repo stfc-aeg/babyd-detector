@@ -1,10 +1,12 @@
-from odin.adapters.adapter import (ApiAdapter, ApiAdapterResponse, response_types)
+from odin.adapters.adapter import (ApiAdapter, ApiAdapterResponse, response_types, wants_metadata)
 from odin.adapters.parameter_tree import ParameterTreeError
 from odin.util import decode_request_body
 
 
 from babyd.alphadata_ctrl import AlphaDataController
 from babyd.adxdma import AdxdmaException
+
+import logging
 
 
 class BaseAdapter(ApiAdapter):
@@ -22,8 +24,9 @@ class BaseAdapter(ApiAdapter):
 
     @response_types('application/json', default='application/json')
     def get(self, path, request):
+        metadata = wants_metadata(request)
         try:
-            response = self.controller.param_tree.get(path)
+            response = self.controller.param_tree.get(path, metadata)
             content_type = 'application/json'
             status = 200
         except ParameterTreeError as param_error:

@@ -4,6 +4,7 @@ import logging
 import numpy as np
 
 import sys
+import math
 import struct
 from functools import partial
 
@@ -96,20 +97,27 @@ class adxdma(xdma):
             raise AdxdmaException(lib.ADXDMA_DEVICE_NOT_FOUND)
         complete = ffi.new("ADXDMA_COMPLETION *")
         # 4 is the standard word size for reading
-        # word_size = 4
-        buf_length = length//word_size
-        if not buf_length:
-            buf_length = 1
-        if word_size == 4:
-            dtype = np.uint32
-        elif word_size == 2:
-            dtype = np.uint16
-        else:
-            dtype = np.uint8
+        word_size = 4  # OVERWRITE FOR ERROR WHEN READING OTHER WORD SIZES
+        buf_length = math.ceil(length / word_size)
+        # if not buf_length:
+        #     buf_length = 1
+        # if word_size == 4:
+        dtype = np.uint32
+        # elif word_size == 2:
+        #     dtype = np.uint16
+        # else:
+        #     dtype = np.uint8
         buf = np.zeros(int(buf_length), dtype=dtype)
         point = ffi.from_buffer("uint32_t[]", buf)
 
-        status = lib.ADXDMA_ReadWindow(self.window[0], 0, word_size, addr, length, point, complete)
+        # CAUTION: using a word_size of != 4 seems to cause weird issues with reading where it'll miss data?
+        #          performing a read of the same length at the same address but with a word size of
+        #          2 instead of 4 gives 0s where there should be data.
+        #          E.G using the dump program
+        # (4 byte words) ./adxdma_dump rd 2 0x120200 16: INFO:  00000000_00120200: 94EF772E 00000001 1ACC2780 0000038F
+        # (2 byte words) ./adxdma_dump rw 2 0x120200 16: INFO:  00000000_00120200: 772E 0000 0001 0000 2780 0000 038F 0000
+
+        status = lib.ADXDMA_ReadWindow(self.window[0], 0, 4, addr, length, point, complete)
         if status >= 0x100:
             # error occur
             raise AdxdmaException(status)
@@ -248,14 +256,14 @@ class Register():
     def __init__(self, addr: int, length: int, readonly=False, bitmap=None):
         self.addr = addr
         self.length = length
-        if length % 4:
-            if length % 2:
-                self.word_size = 1
-            else:
-                self.word_size = 2
-        else:
-            self.word_size = 4
-        self.value = [0] * int(length//self.word_size)
+        # if length % 4:
+        #     if length % 2:
+        #         self.word_size = 1
+        #     else:
+        #         self.word_size = 2
+        # else:
+        self.word_size = 4
+        self.value = [0] * math.ceil(length / self.word_size)
         self.readonly = readonly
 
         self.fields = bitmap
@@ -265,107 +273,3 @@ class Register():
             "length": (lambda: self.length, None),
             "readonly": (lambda: self.readonly, None)
         }
-
-
-class BitMapEntry():
-
-    def __init__(self, bit: int, name: str, readonly=False):
-        self.bit = bit
-        self.name = name
-        self.readonly = readonly
-
-
-class DetailedRegister():
-
-    def __init__(self, addr: int, length: int, read, write, bitmap: list = None, readonly=False):
-        self.addr = addr
-        self.length = length
-        self.value = [0] * int(length // 4)
-        self.bitmap = bitmap  # bitmap is assumed to be a list of BitMapEntry
-
-        self.read = read
-        self.write = write
-
-        self.readonly = readonly
-
-        self.bits_param_tree = None
-        if self.bitmap:
-            self.bits_param_tree = {
-                entry.name: (partial(self.get_bit, bit=entry.bit),
-                             None if entry.readonly else partial(self.set_bit, bit=entry.bit))
-                for entry in self.bitmap
-            }
-        self.param_tree = {
-            "addr": (lambda: self.addr, None),
-            # "length": (lambda: self.length, None),
-            "value": (self.read_val, self.set_val if not readonly else None),
-            "bits": self.bits_param_tree,
-            "readonly": (lambda: self.readonly, None)
-        }
-
-    def read_val(self):
-        try:
-            self.value = self.read(addr=self.addr, length=self.length)
-        except XdmaException:
-            pass
-        return self.value
-
-    def set_val(self, value: int):
-        if self.readonly:
-            return
-        self.value = value
-        self.write(addr=self.addr, value=self.value)
-        self.read_val()
-
-    def set_bit(self, value, bit: int):
-        # https://stackoverflow.com/questions/12173774/how-to-modify-bits-in-an-integer
-        if self.readonly or bit not in [x.bit for x in self.bitmap]:
-            return
-        reg_val_list = self.read_val()
-        struct_format_string = "@" + ('I' * len(reg_val_list))
-        reg_val = struct.pack(struct_format_string, *reg_val_list)
-        # logging.debug(struct_format_string)
-        reg_val = int.from_bytes(reg_val, "little")
-
-        if isinstance(bit, tuple):
-            lo, hi = bit
-            val_bit_len = value.bit_length()
-            if val_bit_len > (1 + hi - lo):
-                # value is too big to fit into the bitspace given
-                return
-            # get mask for just the bits we're interested in
-            mask = ~(~0 << hi << 1) & (~0 << lo)
-            # get original val
-            org_val = reg_val & mask
-            # XOR orignal val, to set all bits we're interested in to zero
-            reg_val = reg_val ^ org_val
-            # or with new val to set the required bits
-            reg_val = reg_val | (value << lo)
-        else:
-            # modify bit. If val = true, or with the bit to set it to 1. else, and with the inverse of the bit
-            reg_val = (reg_val | (1 << bit)) if value else (reg_val & ~(1 << bit))
-            
-        # write value back
-        reg_val = reg_val.to_bytes(self.length, 'little')
-        logging.debug(reg_val)
-        reg_val = list(struct.unpack(struct_format_string, reg_val))
-        logging.debug(reg_val)
-        self.set_val(reg_val)
-
-    def get_bit(self, bit):
-        value = int.from_bytes(struct.pack("<" + ("I" * len(self.value)), *self.value), "little")
-        if isinstance(bit, tuple):
-            lo, hi = bit
-            
-            value = value >> lo
-
-            mask = ~(~0 << (1+hi-lo))
-            extract_bits = value & mask
-
-            return extract_bits
-        else:
-            return True if (1 << bit) & value else False
-
-    def get_bitmap(self):
-        return self.bitmap
-

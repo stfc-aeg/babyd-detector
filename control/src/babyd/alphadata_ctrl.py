@@ -45,7 +45,13 @@ class AlphaDataController():
                               None if reg.readonly else (partial(self.write_reg, register=reg))),
                     "fields": None if not reg.fields else {
                         field_name: (partial(self.read_field, register=reg, field_addr=field_addr),
-                                     None if reg.readonly else (partial(self.write_field, register=reg, field_addr=field_addr)))
+                                     None if reg.readonly else (partial(self.write_field, register=reg, field_addr=field_addr)),
+                                     {  # metadata
+                                         "min": 0,
+                                         "max": 1 if not isinstance(field_addr, (list, tuple)) else
+                                            pow(2, (field_addr[1] - field_addr[0] + 1)) - 1
+                                     })
+
                         for field_name, field_addr in reg.fields.items()}
                 } for reg_name, reg in value.items()
             } for key, value in self.registers.items()}
