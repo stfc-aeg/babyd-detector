@@ -14,6 +14,8 @@ include_directories(
 # Add library for BabydDetectorPlugin
 add_library(BabydDetectorPlugin SHARED
         BabydDetectorPlugin.cpp
+        BabydFrameBuilderCore.cpp
+        BabydFrameWrapperCore.cpp
 )
 
 target_compile_options(BabydDetectorPlugin PRIVATE ${LIBDPDK_CFLAGS})

@@ -98,7 +98,7 @@
                     "secondary_fanout": true
                 },
                 "frame_wrapper": {
-                    "core_name": "FrameWrapperCore",
+                    "core_name": "BabydFrameWrapperCore",
                     "num_cores": 1,
                     "connect": "frame_builder"
                 }
