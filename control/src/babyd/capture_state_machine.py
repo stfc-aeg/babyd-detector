@@ -4,6 +4,8 @@ import time
 
 from .capture_manager import CaptureManager, Capture
 
+# add dependency for statemachine
+
 class CaptureStateMachine(StateMachine):
     # states
     idle = State('Idle', initial=True)
