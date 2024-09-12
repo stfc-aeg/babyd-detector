@@ -6,11 +6,11 @@ import time
 
 from odin.adapters.parameter_tree import ParameterTree
 
-from .capture_state_machine import CaptureStateMachine
-from .capture_manager import CaptureManager
-from .loaded_adapters import Adapters
-from .loki_params import LokiParams
-from .util import iac_get, iac_set
+from .capture.capture_state_machine import CaptureStateMachine
+from .capture.capture_manager import CaptureManager
+from .utilities.loaded_adapters import Adapters
+from .interfaces.loki_params import LokiParams
+from .utilities.util import iac_get, iac_set
 
 class BabyDController:
     """Class to manage the other adapters in the system."""

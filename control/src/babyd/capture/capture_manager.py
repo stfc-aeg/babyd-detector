@@ -5,7 +5,7 @@ import time
 import re
 import os 
 
-from .util import iac_get, iac_set
+from ..utilities.util import iac_get, iac_set
 
 @dataclass
 class Capture:

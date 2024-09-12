@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from odin.adapters.proxy import ProxyAdapter
 
-from .util import iac_set
+from ..utilities.util import iac_set
 
 @dataclass
 class LokiParams:
