@@ -135,7 +135,7 @@ namespace FrameProcessor
             {
                 uint64_t frame_number = decoder_->get_super_frame_number(current_frame_buffer_);
 
-                //LOG4CXX_INFO(logger_, config_.core_name << " : " << proc_idx_ << " Got frame: " << frame_number);
+                LOG4CXX_INFO(logger_, config_.core_name << " : " << proc_idx_ << " Got frame: " << frame_number);
 
                 // If the frame has any dropped packets, iterate through the frame and clear
                 // the payload of the dropped packets
@@ -233,6 +233,8 @@ namespace FrameProcessor
         status.set_param(status_path + "idle_loops", idle_loops_);
 
         status.set_param(status_path + "average_us_compressing", avg_us_spent_building_);
+
+        status.set_param(status_path + ring_name_str(config_.upstream_core, socket_id_, proc_idx_), rte_ring_count(upstream_ring));
     }
 
     bool BabydFrameBuilderCore::connect(void)

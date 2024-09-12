@@ -1,5 +1,5 @@
-#ifndef INCLUDE_BABYDDETECTOR_PROTOCOL_DECODER_H_
-#define INCLUDE_BABYDDETECTOR_PROTOCOL_DECODER_H_
+#ifndef INCLUDE_BABYD_PROTOCOL_DECODER_H_
+#define INCLUDE_BABYD_PROTOCOL_DECODER_H_
 
 #include <ProtocolDecoder.h>
 #include <rte_byteorder.h>
@@ -56,12 +56,12 @@ namespace Defaults
     const std::size_t default_payload_size = 512;
 }
 
-class BabydDetectorDecoder : public ProtocolDecoder
+class BabydDecoder : public ProtocolDecoder
 {
 
 public:
 
-    BabydDetectorDecoder() :
+    BabydDecoder() :
         ProtocolDecoder(Defaults::default_packets_per_frame, Defaults::default_payload_size)
     { }
 
@@ -312,4 +312,4 @@ public:
     }
 };
 
-#endif // INCLUDE_BABYDDETECTOR_PROTOCOL_DECODER_H_
+#endif // INCLUDE_BABYD_PROTOCOL_DECODER_H_

@@ -8,9 +8,9 @@
     {
         "plugin": {
             "load": {
-                "index": "BabydDetector",
-                "name": "BabydDetectorPlugin",
-                "library": "./lib/libBabydDetectorPlugin.so"
+                "index": "Babyd",
+                "name": "BabydPlugin",
+                "library": "./lib/libBabydPlugin.so"
             }
         }
     },
@@ -35,7 +35,7 @@
     {
         "plugin": {
             "connect": {
-                "index": "BabydDetector",
+                "index": "Babyd",
                 "connection": "frame_receiver"
             }
         }
@@ -43,21 +43,13 @@
     {
         "plugin": {
             "connect": {
-                "index": "Liveview",
-                "connection": "BabydDetector"
-            }
-        }
-    },
-    {
-        "plugin": {
-            "connect": {
                 "index": "hdf",
-                "connection": "LiveView"
+                "connection": "Babyd"
             }
         }
     },
     {
-        "BabydDetector": {
+        "Babyd": {
             "update_config": false,
             "dpdk_process_rank": 0,
             "num_secondary_processes": 0,
@@ -99,6 +91,7 @@
                 },
                 "frame_wrapper": {
                     "core_name": "BabydFrameWrapperCore",
+                    "dataset_name": "raw",
                     "num_cores": 1,
                     "connect": "frame_builder"
                 }
@@ -125,7 +118,7 @@
             "file": {
                 "path": "/tmp/"
             },
-            "frames": 1000000,
+            "frames": 0,
             "acquisition_id": "test_1",
             "write": false,
             "timeout_timer_period": 10000,
@@ -133,13 +126,6 @@
                 "number": 1,
                 "rank": 0
             }
-        },
-        "Liveview":       
-        {
-            "per_second": 1,
-            "live_view_socket_addr": "tcp://127.0.0.1:5045",
-            "dataset_name": "",
-            "filter_tagged": ""
         }
     }
 ]

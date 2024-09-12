@@ -13,7 +13,7 @@ include_directories(
 
 # Add library for BabydDetectorPlugin
 add_library(BabydDetectorPlugin SHARED
-        BabydDetectorPlugin.cpp
+        BabydPlugin.cpp
         BabydFrameBuilderCore.cpp
         BabydFrameWrapperCore.cpp
 )

@@ -5,8 +5,8 @@
  *      Author: Dominic Banks, STFC Detector Systems Software Group
  */
 
-#ifndef INCLUDE_BABYDDETECTORDEFINITIONS_H_
-#define INCLUDE_BABYDDETECTORDEFINITIONS_H_
+#ifndef INCLUDE_BABYDDEFINITIONS_H_
+#define INCLUDE_BABYDDEFINITIONS_H_
 
 #define ILLEGAL_FEM_IDX -1
 
@@ -14,4 +14,4 @@ namespace Babyd {
 
 }
 
-#endif /* INCLUDE_BABYDDETECTORDEFINITIONS_H_ */
+#endif /* INCLUDE_BABYDDEFINITIONS_H_ */

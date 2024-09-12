@@ -145,7 +145,14 @@ namespace FrameProcessor
                 //     LOG4CXX_INFO(logger_, "Wrapped frame: " << frame_number * decoder_->get_frame_outer_chunk_size());
                 // }
 
-                //LOG4CXX_INFO(logger_, "Wrapped frame: " << frame_number);
+                LOG4CXX_INFO(logger_, "Wrapped frame: "
+                            << " | Dataset name: " << config_.dataset_name_
+                            << " | frame_number: " << frame_number
+                            << " | Bitdepth: " << decoder_->get_frame_bit_depth()
+                            << " | image size: " << image_size
+                            << " | Compression: " << (frame_size != image_size ? "true" : "false")
+
+                    );
             }
         }
 
@@ -181,6 +188,8 @@ namespace FrameProcessor
         status.set_param(status_path + "idle_loops", idle_loops_);
 
         status.set_param(status_path + "frames_wrapped_us_compressing", avg_us_spent_wrapping_);
+
+        status.set_param(status_path + ring_name_str(config_.upstream_core, socket_id_, proc_idx_), rte_ring_count(upstream_ring_));
     }
 
     bool BabydFrameWrapperCore::connect(void)

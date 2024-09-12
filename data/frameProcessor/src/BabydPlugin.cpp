@@ -1,11 +1,11 @@
 /*
- * BabydDetectorPlugin.cpp
+ * BabydPlugin.cpp
  *
  *  Created on: 10 September 2024
  *      Author: Dominic Banks, STFC Detector Systems Software Group
  */
 
-#include "BabydDetectorPlugin.h"
+#include "BabydPlugin.h"
 #include "version.h"
 
 namespace FrameProcessor
@@ -14,22 +14,22 @@ namespace FrameProcessor
   /**
    * The constructor sets up logging used within the class.
    */
-  BabydDetectorPlugin::BabydDetectorPlugin() :
+  BabydPlugin::BabydPlugin() :
     DpdkFrameProcessorPlugin()
   {
     // Setup logging for the class
-    logger_ = Logger::getLogger("FP.BabydDetectorPlugin");
+    logger_ = Logger::getLogger("FP.BabydPlugin");
     logger_->setLevel(Level::getAll());
-    LOG4CXX_INFO(logger_, "BabydDetectorPlugin version " << this->get_version_long() << " loaded");
+    LOG4CXX_INFO(logger_, "BabydPlugin version " << this->get_version_long() << " loaded");
 
   }
 
   /**
    * Destructor.
    */
-  BabydDetectorPlugin::~BabydDetectorPlugin()
+  BabydPlugin::~BabydPlugin()
   {
-    LOG4CXX_TRACE(logger_, "BabydDetectorPlugin destructor.");
+    LOG4CXX_TRACE(logger_, "BabydPlugin destructor.");
   }
 
   /**
@@ -39,21 +39,21 @@ namespace FrameProcessor
    * \param[in] config - Reference to the configuration IpcMessage object.
    * \param[out] reply - Reference to the reply IpcMessage object.
    */
-  void BabydDetectorPlugin::configure(OdinData::IpcMessage& config, OdinData::IpcMessage& reply)
+  void BabydPlugin::configure(OdinData::IpcMessage& config, OdinData::IpcMessage& reply)
   {
-    LOG4CXX_INFO(logger_, "Configuring Babyd Detector plugin");
+    LOG4CXX_INFO(logger_, "Configuring Babyd  plugin");
 
     LOG4CXX_INFO(logger_, "Plugin name: " << this->get_name());
-    FrameCallback frame_callback = boost::bind(&BabydDetectorPlugin::process_frame, this, _1);
+    FrameCallback frame_callback = boost::bind(&BabydPlugin::process_frame, this, _1);
 
     DpdkFrameProcessorPlugin::configure(config, reply, &decoder_, frame_callback);
 
   }
 
-  void BabydDetectorPlugin::requestConfiguration(OdinData::IpcMessage& reply)
+  void BabydPlugin::requestConfiguration(OdinData::IpcMessage& reply)
   {
     // Return the configuration of the plugin
-    LOG4CXX_INFO(logger_, "Configuration requested for Babyd Detector plugin");
+    LOG4CXX_INFO(logger_, "Configuration requested for Babyd  plugin");
 
     DpdkFrameProcessorPlugin::requestConfiguration(reply);
   }
@@ -63,10 +63,10 @@ namespace FrameProcessor
    *
    * \param[out] status - Reference to an IpcMessage value to store the status.
    */
-  void BabydDetectorPlugin::status(OdinData::IpcMessage& status)
+  void BabydPlugin::status(OdinData::IpcMessage& status)
   {
     // Record the plugin's status items
-    LOG4CXX_INFO(logger_, "Status requested for Babyd Detector plugin");
+    LOG4CXX_INFO(logger_, "Status requested for Babyd  plugin");
 
     status.set_param(get_name() + "/" + "wibble", true);
 
@@ -76,9 +76,9 @@ namespace FrameProcessor
   /**
    * Reset process plugin statistics, i.e. counter of packets lost
    */
-  bool BabydDetectorPlugin::reset_statistics(void)
+  bool BabydPlugin::reset_statistics(void)
   {
-    LOG4CXX_INFO(logger_, "Statistics reset requested for Babyd Detector plugin")
+    LOG4CXX_INFO(logger_, "Statistics reset requested for Babyd  plugin")
 
     bool reset_ok = true;
 
@@ -93,9 +93,9 @@ namespace FrameProcessor
    *
    * \param[in] frame - Pointer to a Frame object.
    */
-  void BabydDetectorPlugin::process_frame(boost::shared_ptr<Frame> frame)
+  void BabydPlugin::process_frame(boost::shared_ptr<Frame> frame)
   {
-    // LOG4CXX_DEBUG(logger_, "Processing frame in Babyd Detector plugin");
+    // LOG4CXX_DEBUG(logger_, "Processing frame in Babyd  plugin");
     this->push(frame);
   }
 
