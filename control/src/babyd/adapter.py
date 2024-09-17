@@ -11,7 +11,6 @@ class BabyDAdapter(ApiAdapter):
     def __init__(self, **kwargs):
         """Initialise the BabyD object."""
         super(BabyDAdapter, self).__init__(**kwargs)
-        logging.debug("BabyD Adapter Loading")
         self.BabyDController = BabyDController(self.options)
         logging.debug("BabyD Adapter Loaded")
 

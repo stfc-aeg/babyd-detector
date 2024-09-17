@@ -93,6 +93,8 @@ class BabyDController:
         """Set parameters in the parameter tree of the controller."""
         if 'file_name' in data:
             data['file_name'] = data['file_name'].split('.')[0]
+        if 'file_path' in data and not data['file_path'].endswith('/'):
+            data['file_path'] += '/'
         self.param_tree.set(path, data)
     
     @run_on_executor
