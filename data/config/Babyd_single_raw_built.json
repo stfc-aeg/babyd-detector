@@ -79,18 +79,18 @@
                 },
                 "packet_processor": {
                     "core_name": "PacketProcessorCore",
-                    "num_cores": 4,
+                    "num_cores": 1,
                     "connect": "packet_rx",
                     "frame_timeout": 1000
                 },
                 "frame_builder": {
-                    "core_name": "FrameBuilderCore",
+                    "core_name": "BabydFrameBuilderCore",
                     "num_cores": 1,
                     "connect": "packet_processor",
                     "secondary_fanout": true
                 },
                 "frame_wrapper": {
-                    "core_name": "FrameWrapperCore",
+                    "core_name": "BabydFrameWrapperCore",
                     "dataset_name": "raw",
                     "num_cores": 1,
                     "connect": "frame_builder"
@@ -102,6 +102,19 @@
         "hdf": {
             "dataset": {
                 "raw": {
+                    "datatype": "uint16",
+                    "dims": [
+                        16,
+                        16
+                    ],
+                    "chunks": [
+                        1000,
+                        16,
+                        16
+                    ],
+                    "compression": "none"
+                },
+                "built": {
                     "datatype": "uint16",
                     "dims": [
                         16,

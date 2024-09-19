@@ -12,6 +12,7 @@ using namespace log4cxx::helpers;
 #include "ProtocolDecoder.h"
 #include <rte_ring.h>
 #include <blosc.h>
+#include <rte_memcpy.h>
 
 namespace FrameProcessor
 {

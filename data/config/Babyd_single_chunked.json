@@ -17,15 +17,6 @@
     {
         "plugin": {
             "load": {
-                "index": "Liveview",
-                "name": "LiveViewPlugin",
-                "library": "./lib/libLiveViewPlugin.so"
-            }
-        }
-    },
-    {
-        "plugin": {
-            "load": {
                 "index": "hdf",
                 "name": "FileWriterPlugin",
                 "library": "./lib/libHdf5Plugin.so"
@@ -84,13 +75,13 @@
                     "frame_timeout": 1000
                 },
                 "frame_builder": {
-                    "core_name": "FrameBuilderCore",
-                    "num_cores": 1,
+                    "core_name": "BabydFrameBuilderCore",
+                    "num_cores": 2,
                     "connect": "packet_processor",
                     "secondary_fanout": true
                 },
                 "frame_wrapper": {
-                    "core_name": "FrameWrapperCore",
+                    "core_name": "BabydFrameWrapperCore",
                     "dataset_name": "raw",
                     "num_cores": 1,
                     "connect": "frame_builder"

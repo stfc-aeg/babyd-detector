@@ -53,12 +53,13 @@ namespace FrameProcessor
 
         // Frame variables
         struct SuperFrameHeader *current_super_frame_buffer_;
+        struct SuperFrameHeader *built_frame_buffer;
         dimensions_t dims(2);
 
         // Specific frame variables from decoder
         dims[0] = decoder_->get_frame_x_resolution();
         dims[1] = decoder_->get_frame_y_resolution();
-        std::size_t frame_size = decoder_->get_frame_data_size() * decoder_->get_frame_outer_chunk_size();
+                std::size_t frame_size = decoder_->get_frame_data_size() * decoder_->get_frame_outer_chunk_size();
             //dims[0] * dims[1] * get_size_from_enum(decoder_->get_frame_bit_depth());
         std::size_t frame_header_size = decoder_->get_frame_header_size();
 
@@ -70,7 +71,9 @@ namespace FrameProcessor
         uint64_t average_wrapping_cycles = 1;
         uint64_t last_Frame = -1;
         uint64_t frames_wrapped_ = 0;
-        uint64_t data_pointer_offset = (frame_header_size * decoder_->get_frame_outer_chunk_size()) + decoder_->get_super_frame_header_size();
+        uint64_t data_pointer_offset = (decoder_->get_frame_header_size() * decoder_->get_frame_outer_chunk_size()) + decoder_->get_super_frame_header_size();
+
+        
 
         //While loop to continuously dequeue frame objects
         while (likely(run_lcore_))
@@ -98,6 +101,23 @@ namespace FrameProcessor
             }
             else
             {
+
+                // Get a pointer to the start of the raw data
+                uint16_t* raw_data_ptr = (uint16_t*)decoder_->get_image_data_start(current_super_frame_buffer_);
+                // Calculate the start of the built data, this should be past where the raw data is held
+                uint16_t* built_data_ptr = raw_data_ptr + (16 * 16 * 1000);
+
+                // LOG4CXX_INFO(logger_, "Frame information:");
+                // LOG4CXX_INFO(logger_, "current_super_frame_buffer_: " << current_super_frame_buffer_);
+                // LOG4CXX_INFO(logger_, "get_image_data_start: " << (uint16_t*) decoder_->get_image_data_start(current_super_frame_buffer_));
+                // LOG4CXX_INFO(logger_, "raw_data_ptr: " << raw_data_ptr);
+                // LOG4CXX_INFO(logger_, "built_data_ptr: " << built_data_ptr);
+                // LOG4CXX_INFO(logger_, "raw_data_ptr - current_super_frame_buffer_: " << raw_data_ptr - (uint16_t*) current_super_frame_buffer_);
+                // LOG4CXX_INFO(logger_, "built_data_ptr - current_super_frame_buffer_: " << built_data_ptr - (uint16_t*) current_super_frame_buffer_);
+                // LOG4CXX_INFO(logger_, "get_image_data_start - current_super_frame_buffer_: " << decoder_->get_image_data_start(current_super_frame_buffer_) - (char*) current_super_frame_buffer_);
+                // LOG4CXX_INFO(logger_, "get_frame_buffer_size " << decoder_->get_frame_buffer_size());
+
+
                 uint64_t frame_number = decoder_->get_super_frame_number(current_super_frame_buffer_);
                 last_Frame = frame_number;
 
@@ -105,7 +125,7 @@ namespace FrameProcessor
 
                 // Create new frame metadata object
                 FrameMetaData frame_meta;
-                frame_meta.set_dataset_name(config_.dataset_name_);
+                frame_meta.set_dataset_name("raw");
                 frame_meta.set_frame_number(frame_number);
                 frame_meta.set_dimensions(dims);
                 frame_meta.set_data_type(decoder_->get_frame_bit_depth());
@@ -113,37 +133,64 @@ namespace FrameProcessor
                 // Get the image size, with this we can work out if the frame has been compressed
                 uint64_t image_size = decoder_->get_super_frame_image_size(current_super_frame_buffer_);
 
-                if (frame_size != image_size)
-                {
-                    frame_meta.set_compression_type(blosc);
-                }
-                else
-                {
-                    frame_meta.set_compression_type(no_compression);
-                }
+                frame_meta.set_compression_type(blosc);
+                frame_meta.set_compression_type(no_compression);
+
 
                 // Create the shared boost pointer to allow the plugin chain to access huge pages
                 boost::shared_ptr<Frame> complete_frame =
                         boost::shared_ptr<Frame>(new DpdkSharedBufferFrame(
                                                     frame_meta, current_super_frame_buffer_,
                                                     decoder_->get_frame_buffer_size(),
-                                                    clear_frames_ring_, data_pointer_offset));
+                                                    nullptr, data_pointer_offset));
 
-                complete_frame->set_image_size(decoder_->get_super_frame_image_size(current_super_frame_buffer_));
+                complete_frame->set_image_size(decoder_->get_frame_data_size() * decoder_->get_frame_outer_chunk_size());
                 complete_frame->set_outer_chunk_size(decoder_->get_frame_outer_chunk_size());
+
+
+                LOG4CXX_INFO(logger_, "Core " << lcore_id_ << ": Wrapping raw frame data...");
+                    
                 frame_callback_(complete_frame);
+
+
+
+                //decoder_->set_super_frame_image_size(built_frame_buffer, frame_size);
+
+                // Create new frame metadata object
+                FrameMetaData built_frame_meta;
+                built_frame_meta.set_dataset_name("built");
+                built_frame_meta.set_frame_number(frame_number);
+                built_frame_meta.set_dimensions(dims);
+                built_frame_meta.set_data_type(decoder_->get_frame_bit_depth());
+
+                // Get the image size, with this we can work out if the frame has been compressed
+                uint64_t built_image_size = decoder_->get_super_frame_image_size(current_super_frame_buffer_);
+
+                built_frame_meta.set_compression_type(blosc);
+                built_frame_meta.set_compression_type(no_compression);
+
+
+                // Create the shared boost pointer to allow the plugin chain to access huge pages
+                boost::shared_ptr<Frame> built_complete_frame =
+                        boost::shared_ptr<Frame>(new DpdkSharedBufferFrame(
+                                                    built_frame_meta, current_super_frame_buffer_,
+                                                    decoder_->get_frame_buffer_size(),
+                                                    clear_frames_ring_, data_pointer_offset + 512000)
+                                                );
+
+                built_complete_frame->set_image_size(decoder_->get_frame_data_size() * decoder_->get_frame_outer_chunk_size());
+                built_complete_frame->set_outer_chunk_size(decoder_->get_frame_outer_chunk_size());
+
+                
+                LOG4CXX_INFO(logger_, "Core " << lcore_id_ << ": Wrapping built frame data...");
+                frame_callback_(built_complete_frame);
 
                 // Update monitoring variables now that the Frame has been pushed
                 average_wrapping_cycles = 
                     (average_wrapping_cycles + (rte_get_tsc_cycles() - start_compressing)) / 2;
 
-                frames_per_second++;
-                frames_wrapped_++;
 
-                // if(frame_number % 1000 == 0)
-                // {
-                //     LOG4CXX_INFO(logger_, "Wrapped frame: " << frame_number * decoder_->get_frame_outer_chunk_size());
-                // }
+
 
                 LOG4CXX_INFO(logger_, "Wrapped frame: "
                             << " | Dataset name: " << config_.dataset_name_
@@ -153,6 +200,15 @@ namespace FrameProcessor
                             << " | Compression: " << (frame_size != image_size ? "true" : "false")
 
                     );
+
+
+
+                
+
+
+
+                frames_per_second++;
+                frames_wrapped_++;
             }
         }
 

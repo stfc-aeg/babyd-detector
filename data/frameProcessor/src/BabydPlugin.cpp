@@ -66,7 +66,7 @@ namespace FrameProcessor
   void BabydPlugin::status(OdinData::IpcMessage& status)
   {
     // Record the plugin's status items
-    LOG4CXX_INFO(logger_, "Status requested for Babyd  plugin");
+    // LOG4CXX_INFO(logger_, "Status requested for Babyd  plugin");
 
     status.set_param(get_name() + "/" + "wibble", true);
 

@@ -67,16 +67,18 @@ public:
 
     virtual const std::size_t get_super_frame_header_size(void) const
     {
-        std::size_t frame_marker_size = sizeof(X10GSuperFrameHeader().frame_state);
-        std::size_t frame_header_size = sizeof(X10GSuperFrameHeader) +
-            (frame_marker_size * FRAME_OUTER_CHUNK_SIZE - 1);
+        // std::size_t frame_marker_size = sizeof(X10GSuperFrameHeader().frame_state);
+        // std::size_t frame_header_size = sizeof(X10GSuperFrameHeader) +
+        //     (frame_marker_size * FRAME_OUTER_CHUNK_SIZE - 1);
 
-        return frame_header_size;
+        // return frame_header_size;
+
+        return sizeof(X10GSuperFrameHeader);
     }
 
     virtual const std::size_t get_super_frame_buffer_size(void) const
     {
-        return sizeof(X10GSuperFrameHeader) + get_super_frame_header_size() + ((get_frame_header_size() + get_frame_data_size()) * FRAME_OUTER_CHUNK_SIZE);;
+        return sizeof(X10GSuperFrameHeader) + get_super_frame_header_size() + ((get_frame_header_size() + get_frame_data_size()) * FRAME_OUTER_CHUNK_SIZE * 2); // Double the buffer size to allow us to store both the raw and built frames in a single memory location
     }
 
     virtual const uint64_t get_super_frame_number(SuperFrameHeader* super_frame_hdr) const
@@ -157,11 +159,13 @@ public:
 
     virtual const std::size_t get_frame_header_size(void) const
     {
-        std::size_t packet_marker_size = sizeof(X10GRawFrameHeader().packet_state);
-        std::size_t packet_header_size = sizeof(X10GRawFrameHeader) +
-            (packet_marker_size * packets_per_frame_ - 1);
+        // std::size_t packet_marker_size = sizeof(X10GRawFrameHeader().packet_state);
+        // std::size_t packet_header_size = sizeof(X10GRawFrameHeader) +
+        //     (packet_marker_size * packets_per_frame_ - 1);
 
-        return packet_header_size;
+        // return packet_header_size;
+
+        return sizeof(X10GRawFrameHeader);
     }
 
     virtual const std::size_t get_frame_data_size(void) const
@@ -171,7 +175,7 @@ public:
 
     const std::size_t get_frame_buffer_size(void) const
     {
-        return get_super_frame_header_size() + ((get_frame_header_size() + get_frame_data_size()) * FRAME_OUTER_CHUNK_SIZE);
+        return get_super_frame_header_size() + ((get_frame_header_size() + get_frame_data_size()) * FRAME_OUTER_CHUNK_SIZE * 2);
     }
 
     virtual const std::size_t get_packet_header_size(void) const
@@ -307,7 +311,11 @@ public:
     }
 
     char* get_image_data_start(SuperFrameHeader* superframe_hdr)
+
     {
+        // std::cout << "super frame header size: " << get_super_frame_header_size()
+        //         << " header size x chunk size: " << get_frame_header_size() * FRAME_OUTER_CHUNK_SIZE
+        //         << std::endl;
         return reinterpret_cast<char *>(superframe_hdr) + get_super_frame_header_size() + (get_frame_header_size() * FRAME_OUTER_CHUNK_SIZE);
     }
 };

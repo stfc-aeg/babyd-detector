@@ -45,6 +45,9 @@ namespace FrameProcessor
         uint64_t idle_loops_;
         uint64_t avg_us_spent_building_;
 
+        uint64_t in_order_frames_;
+        uint64_t out_of_order_frames_;
+
 
         struct rte_ring* upstream_ring;
         struct rte_ring* clear_frames_ring_;

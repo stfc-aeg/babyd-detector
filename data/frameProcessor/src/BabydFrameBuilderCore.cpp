@@ -4,6 +4,10 @@
 #include "DpdkUtils.h"
 #include "DpdkSharedBufferFrame.h"
 
+#define COARSE_MASK 0x00FF
+#define OVERFLOW_MASK 0x0100
+#define FINE_MASK 0xFE00
+
 namespace FrameProcessor
 {
     BabydFrameBuilderCore::BabydFrameBuilderCore(
@@ -16,7 +20,9 @@ namespace FrameProcessor
                                         built_frames_(0),
                                         built_frames_hz_(0),
                                         idle_loops_(0),
-                                        avg_us_spent_building_(0)
+                                        avg_us_spent_building_(0),
+                                        out_of_order_frames_(0),
+                                        in_order_frames_(0)
     {
 
         // Get the configuration container for this worker
@@ -75,6 +81,8 @@ namespace FrameProcessor
         stop();
     }
 
+    
+
     bool BabydFrameBuilderCore::run(unsigned int lcore_id)
     {
 
@@ -84,9 +92,7 @@ namespace FrameProcessor
         LOG4CXX_INFO(logger_, "Core " << lcore_id_ << " starting up");
 
         // Generic frame variables
-        struct SuperFrameHeader *current_frame_buffer_;
-        struct SuperFrameHeader *reordered_frame_location_;
-        struct SuperFrameHeader *returned_frame_location_;
+        struct SuperFrameHeader *current_super_frame_buffer_;
         dimensions_t dims(2);
 
         // Specific frame variables from decoder
@@ -104,9 +110,24 @@ namespace FrameProcessor
         uint64_t cycles_per_sec = rte_get_tsc_hz();
         uint64_t start_building = 1;
         uint64_t average_building_cycles = 1;
+        bool first_frame = true;
+        uint64_t prev_frame_number = 1;
+        uint64_t frame_number = 1;
 
-        // Get a memory location for the reordered frame to go into
-        rte_ring_dequeue(clear_frames_ring_, (void **)&reordered_frame_location_);
+        // Create a buffer for a single frame, we set this to zero on creation
+        uint16_t frame_buffer[256] = { 0 };
+
+        LOG4CXX_INFO(logger_, "Decoder static information:");
+        LOG4CXX_INFO(logger_, "get_frame_x_resolution: " << decoder_->get_frame_x_resolution());
+        LOG4CXX_INFO(logger_, "get_frame_y_resolution: " << decoder_->get_frame_y_resolution());
+        LOG4CXX_INFO(logger_, "get_frame_outer_chunk_size: " << decoder_->get_frame_outer_chunk_size());
+        LOG4CXX_INFO(logger_, "get_frame_bit_depth: " << static_cast<int>(decoder_->get_frame_bit_depth()));
+        LOG4CXX_INFO(logger_, "get_super_frame_header_size: " << decoder_->get_super_frame_header_size());
+        LOG4CXX_INFO(logger_, "get_frame_header_size: " << decoder_->get_frame_header_size());
+        LOG4CXX_INFO(logger_, "get_frame_data_size: " << decoder_->get_frame_data_size());
+        LOG4CXX_INFO(logger_, "get_frame_buffer_size: " << decoder_->get_frame_buffer_size());
+        LOG4CXX_INFO(logger_, "get_packet_header_size: " << decoder_->get_packet_header_size());
+
 
         // While loop to continuously dequeue frame objects
         while (likely(run_lcore_))
@@ -125,7 +146,7 @@ namespace FrameProcessor
                 last = now;
             }
             // Attempt to dequeue a new frame object
-            if (rte_ring_dequeue(upstream_ring, (void **)&current_frame_buffer_) < 0)
+            if (rte_ring_dequeue(upstream_ring, (void **)&current_super_frame_buffer_) < 0)
             {
                 // No frame was dequeued, try again
                 idle_loops_++;
@@ -133,66 +154,98 @@ namespace FrameProcessor
             }
             else
             {
-                uint64_t frame_number = decoder_->get_super_frame_number(current_frame_buffer_);
+                frame_number = decoder_->get_super_frame_number(current_super_frame_buffer_);
 
-                LOG4CXX_INFO(logger_, config_.core_name << " : " << proc_idx_ << " Got frame: " << frame_number);
-
-                // If the frame has any dropped packets, iterate through the frame and clear
-                // the payload of the dropped packets
-                uint32_t incomplete_frames = decoder_->get_frame_outer_chunk_size() - decoder_->get_super_frame_frames_recieved(current_frame_buffer_);
-
-                if (incomplete_frames)
+                if((prev_frame_number + 1) == frame_number)
                 {
-                    uint32_t frame_idx = 0;
-                    uint32_t frames_cleared = 0;
-
-                    while(frames_cleared < incomplete_frames)
-                    {
-                        uint32_t packet_idx = 0;
-                        uint32_t packets_cleared = 0;
-
-                        uint32_t packets_dropped = decoder_->get_packets_dropped(
-                            decoder_->get_frame_header(current_frame_buffer_, frame_idx)
-                        );
-
-                        while (packets_cleared < packets_dropped)
-                        {
-                            if (decoder_->get_packet_state(decoder_->get_frame_header(current_frame_buffer_, frame_idx), packet_idx) == 0)
-                            {
-                                // This is a dropped packet and needs to be zeroed out
-                                // to prevent corrupting the data
-                                memset(
-                                    decoder_->get_image_data_start(current_frame_buffer_) + ((frame_idx * payload_size * decoder_->get_packets_per_frame())) + (packet_idx * payload_size),
-                                    0, payload_size);
-
-                                packets_cleared++;
-                            }
-                            packet_idx++;
-                        }
-                        frames_cleared++;
-                    }
-
-                    LOG4CXX_INFO(logger_,
-                                 "Got incomplete super frame with " << incomplete_frames << " incomplete frames");
+                    in_order_frames_++;
+                }
+                else
+                {
+                    out_of_order_frames_++;
                 }
 
-                // Use the decoder to build that frame into another HP location
-                returned_frame_location_ =
-                    decoder_->reorder_frame(current_frame_buffer_, reordered_frame_location_);
+                prev_frame_number = frame_number;
+
+
+                // Get a pointer to the start of the raw data
+                uint16_t* raw_data_ptr = (uint16_t*)decoder_->get_image_data_start(current_super_frame_buffer_);
+                // Calculate the start of the built data, this should be past where the raw data is held
+                uint16_t* built_data_ptr = raw_data_ptr + (16 * 16 * 1000);
+
                 
-                decoder_->set_super_frame_image_size(returned_frame_location_, frame_size * decoder_->get_frame_outer_chunk_size());
+
+                // Calculate the number of pixels in a single frame
+                size_t pixels_per_frame = decoder_->get_frame_x_resolution() * decoder_->get_frame_y_resolution();
+
+                //  LOG4CXX_INFO(logger_, "Core " << lcore_id_
+                //     << "Starting rebuild of frame: "
+                //     << " Raw data pointer: " << raw_data_ptr
+                //     << " Built data pointer: " << built_data_ptr
+                //     << " Diff: " << built_data_ptr - raw_data_ptr
+                
+                //     );
+
+
+                // LOG4CXX_INFO(logger_, "Frame information:");
+                // LOG4CXX_INFO(logger_, "current_super_frame_buffer_: " << current_super_frame_buffer_);
+                // LOG4CXX_INFO(logger_, "get_image_data_start: " << (uint16_t*) decoder_->get_image_data_start(current_super_frame_buffer_));
+                // LOG4CXX_INFO(logger_, "raw_data_ptr: " << raw_data_ptr);
+                // LOG4CXX_INFO(logger_, "built_data_ptr: " << built_data_ptr);
+                // LOG4CXX_INFO(logger_, "raw_data_ptr - current_super_frame_buffer_: " << raw_data_ptr - (uint16_t*) current_super_frame_buffer_);
+                // LOG4CXX_INFO(logger_, "built_data_ptr - current_super_frame_buffer_: " << built_data_ptr - (uint16_t*) current_super_frame_buffer_);
+                // LOG4CXX_INFO(logger_, "get_image_data_start - current_super_frame_buffer_: " << decoder_->get_image_data_start(current_super_frame_buffer_) - (char*) current_super_frame_buffer_);
+                // LOG4CXX_INFO(logger_, "get_frame_buffer_size " << decoder_->get_frame_buffer_size());
+
+
+
+                // memset(raw_data_ptr, 85, 16 * 16 * 2 * 1000 * 2);
+
+                // memset(built_data_ptr, 170, 16 * 16 * 2 * 1000);
+
+                // For each frame in the super frame
+                for (int frame = 0; frame < decoder_->get_frame_outer_chunk_size(); frame++)
+                {
+                    // Loop over every pixel in the frame
+                    for (size_t pixel = 0; pixel < pixels_per_frame; pixel++)
+                    {
+                        if (frame == 0)
+                        {
+                            // Combine with the buffered frame for the first frame
+                            built_data_ptr[pixel] = (frame_buffer[pixel] & (COARSE_MASK | OVERFLOW_MASK)) | (raw_data_ptr[pixel] & FINE_MASK);
+                        }                      
+                        else
+                        {
+                            // Combine the frame with the one before it
+                            built_data_ptr[pixel] = (raw_data_ptr[pixel - pixels_per_frame] & (COARSE_MASK | OVERFLOW_MASK)) | (raw_data_ptr[pixel] & FINE_MASK);
+                        }
+                    }
+
+                    // Move pointers to the next frame
+                    raw_data_ptr += pixels_per_frame;
+                    built_data_ptr += pixels_per_frame;
+                }
+
+                rte_memcpy(&frame_buffer, raw_data_ptr - pixels_per_frame, pixels_per_frame * 2);
+
+
+                // rte_memcpy(built_data_ptr, raw_data_ptr, decoder_->get_frame_data_size() * decoder_->get_frame_outer_chunk_size());
+
+
+                // LOG4CXX_INFO(logger_, "Core " << lcore_id_
+                //     << " Finished rebuilt of frame"
+                //     << " Raw data pointer: " << raw_data_ptr
+                //     << " Built data pointer: " << built_data_ptr
+                //     << " Diff: " << built_data_ptr - raw_data_ptr
+                
+                //     );
+
+            
 
                 // Enqueue the built frame object to the next set of cores
                 rte_ring_enqueue(
-                    downstream_rings_[frame_number % (config_.num_downstream_cores)], returned_frame_location_);
+                    downstream_rings_[frame_number % (config_.num_downstream_cores)], current_super_frame_buffer_);
                 
-                 // Find which memory location the built was in
-                if (returned_frame_location_ == reordered_frame_location_)
-                {
-                    // The frame was built into the 2nd provided memory location
-                    reordered_frame_location_ = current_frame_buffer_;
-                }
-
                 average_building_cycles = 
                     (average_building_cycles + (rte_get_tsc_cycles() - start_building)) / 2;
 
@@ -235,6 +288,10 @@ namespace FrameProcessor
         status.set_param(status_path + "average_us_compressing", avg_us_spent_building_);
 
         status.set_param(status_path + ring_name_str(config_.upstream_core, socket_id_, proc_idx_), rte_ring_count(upstream_ring));
+
+        status.set_param(status_path + "out_of_order_frames", out_of_order_frames_);
+
+        status.set_param(status_path + "in_order_frames", in_order_frames_);
     }
 
     bool BabydFrameBuilderCore::connect(void)
