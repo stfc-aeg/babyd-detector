@@ -10,6 +10,7 @@ from .capture.capture_state_machine import CaptureStateMachine
 from .capture.capture_manager import CaptureManager
 from .utilities.loaded_adapters import Adapters
 from .interfaces.loki_params import LokiParams
+from .interfaces.adxdma_params import AlphaDataParams
 from .utilities.util import iac_get, iac_set
 
 class BabyDController:
@@ -41,7 +42,8 @@ class BabyDController:
         except Exception as e:
             logging.error(f"Failed to initialize adapter: {e}")
 
-        self.loki_params = LokiParams(self.adapters.loki_proxy)
+        self.loki = LokiParams(self.adapters.loki_proxy)
+        self.adxdma = AlphaDataParams(self.adapters.adxdma)
         self.capture_manager = CaptureManager(self.adapters.munir, self.frame_rate)
         self.state_machine = CaptureStateMachine(self.capture_manager)
 
@@ -58,10 +60,22 @@ class BabyDController:
             return (partial(get_arg, name), partial(set_arg, name))
 
         loki_tree = ParameterTree({
-            'connected': (lambda: self.loki_params.loki_connected, lambda value: setattr(self.loki_params, 'loki_connected', value)),
-            'initialised': (lambda: self.loki_params.loki_initialised, lambda value: setattr(self.loki_params, 'loki_initialised', value)),
-            'sync': (lambda: self.loki_params.loki_sync, lambda value: setattr(self.loki_params, 'loki_sync', value)),
-            'ready': (lambda: self.loki_params.loki_ready, None)
+            'connected': (lambda: self.loki.connected, lambda value: setattr(self.loki, 'connected', value)),
+            'initialised': (lambda: self.loki.initialised, lambda value: setattr(self.loki, 'initialised', value)),
+            'sync': (lambda: self.loki.sync, lambda value: setattr(self.loki, 'sync', value)),
+            'ready': (lambda: self.loki.ready, None)
+        })
+
+        adxdma_tree = ParameterTree({
+            'connected': (lambda: self.adxdma.connected, lambda value: setattr(self.adxdma, 'connected', value)),
+            'ch0_frame_count': (lambda: self.adxdma.ch0_fc, None),
+            'ch1_frame_count': (lambda: self.adxdma.ch1_fc, None),
+            'ip_local': (lambda: self.adxdma.ip_local, lambda value: setattr(self.adxdma, 'ip_local', value)),
+            'ip_remote': (lambda: self.adxdma.ip_remote, lambda value: setattr(self.adxdma, 'ip_remote', value)),
+            'link0_status': (lambda: self.adxdma.link0_status, None),
+            'link1_status': (lambda: self.adxdma.link1_status, None),
+            'available_clock_speeds': (lambda: self.adxdma.available_speeds, None),
+            'clock_speed': (lambda: self.adxdma.clock_speed, lambda value: setattr(self.adxdma, 'clock_speed', value))
         })
 
         munir_tree = ParameterTree({
@@ -81,8 +95,9 @@ class BabyDController:
         })
 
         self.param_tree = ParameterTree({
-            'munir': munir_tree,
-            'loki': loki_tree
+            'loki': loki_tree,
+            'adxdma': adxdma_tree,
+            'munir': munir_tree            
         })
 
     def get(self, path):
@@ -115,7 +130,7 @@ class BabyDController:
     def execute_captures(self, value=None):
         """Check if captures are already being executed and start if not, check relevant parts of system and datapaths
         are ready for capturing"""
-        if not self.loki_params.loki_ready:
+        if not self.loki.ready:
             logging.error("Loki is not ready, Aborting capture execution")
             self.executing = False
             return
@@ -158,7 +173,7 @@ class BabyDController:
     def update_loki_state(self):
         """Update the Loki state by performing an IAC GET."""
         params = iac_get(self.adapters.loki_proxy, "node_1/application/system_state")
-        self.loki_params.update_system_state(params)
+        self.loki.update_system_state(params)
 
     def get_munir_args(self):
         """Get the latest args from munir, and apply them to own params"""

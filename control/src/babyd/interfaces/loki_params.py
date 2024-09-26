@@ -24,37 +24,37 @@ class LokiParams:
         return data
 
     @property
-    def loki_connected(self):
+    def connected(self):
         return self._get_from_system_state('MAIN_EN')
     
-    @loki_connected.setter
-    def loki_connected(self, value):
+    @connected.setter
+    def connected(self, value):
         path = 'node_1/application/system_state/'
         param = 'MAIN_EN'
         iac_set(self._loki_proxy, path, param, value)
 
     @property
-    def loki_initialised(self):
+    def initialised(self):
         return self._get_from_system_state('BD_INITIALISE', 'DONE')
     
-    @loki_initialised.setter
-    def loki_initialised(self, value):
+    @initialised.setter
+    def initialised(self, value):
         path = 'node_1/application/system_state/BD_INITIALISE/'
         param = 'TRIGGER'
         iac_set(self._loki_proxy, path, param, value)
 
     @property
-    def loki_sync(self):
+    def sync(self):
         return self._get_from_system_state('SYNC')
     
-    @loki_sync.setter
-    def loki_sync(self, value):
+    @sync.setter
+    def sync(self, value):
         path = 'node_1/application/system_state/'
         param = 'SYNC'
         iac_set(self._loki_proxy, path, param, value)
 
     @property
-    def loki_ready(self):
+    def ready(self):
         main_en = self._get_from_system_state('MAIN_EN')
         bd_initialise_done = self._get_from_system_state('BD_INITIALISE', 'DONE')
         sync = self._get_from_system_state('SYNC')
