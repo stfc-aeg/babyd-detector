@@ -148,7 +148,7 @@ namespace FrameProcessor
                 complete_frame->set_outer_chunk_size(decoder_->get_frame_outer_chunk_size());
 
 
-                LOG4CXX_INFO(logger_, "Core " << lcore_id_ << ": Wrapping raw frame data...");
+                // LOG4CXX_INFO(logger_, "Core " << lcore_id_ << ": Wrapping raw frame data...");
                     
                 frame_callback_(complete_frame);
 
@@ -182,7 +182,7 @@ namespace FrameProcessor
                 built_complete_frame->set_outer_chunk_size(decoder_->get_frame_outer_chunk_size());
 
                 
-                LOG4CXX_INFO(logger_, "Core " << lcore_id_ << ": Wrapping built frame data...");
+                // LOG4CXX_INFO(logger_, "Core " << lcore_id_ << ": Wrapping built frame data...");
                 frame_callback_(built_complete_frame);
 
                 // Update monitoring variables now that the Frame has been pushed
@@ -192,14 +192,14 @@ namespace FrameProcessor
 
 
 
-                LOG4CXX_INFO(logger_, "Wrapped frame: "
-                            << " | Dataset name: " << config_.dataset_name_
-                            << " | frame_number: " << frame_number
-                            << " | Bitdepth: " << decoder_->get_frame_bit_depth()
-                            << " | image size: " << image_size
-                            << " | Compression: " << (frame_size != image_size ? "true" : "false")
+                // LOG4CXX_INFO(logger_, "Wrapped frame: "
+                //             << " | Dataset name: " << config_.dataset_name_
+                //             << " | frame_number: " << frame_number
+                //             << " | Bitdepth: " << decoder_->get_frame_bit_depth()
+                //             << " | image size: " << image_size
+                //             << " | Compression: " << (frame_size != image_size ? "true" : "false")
 
-                    );
+                //     );
 
 
 

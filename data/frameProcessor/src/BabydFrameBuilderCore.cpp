@@ -108,6 +108,8 @@ namespace FrameProcessor
         uint64_t frames_per_second = 0;
         uint64_t last = rte_get_tsc_cycles();
         uint64_t cycles_per_sec = rte_get_tsc_hz();
+        float core_useage = 1;
+        uint64_t cycles_working = 1;
         uint64_t start_building = 1;
         uint64_t average_building_cycles = 1;
         bool first_frame = true;
@@ -137,7 +139,7 @@ namespace FrameProcessor
             {
                 // Update any monitoring variables every second
                 built_frames_hz_ = frames_per_second;
-                avg_us_spent_building_ = (average_building_cycles * 1000000) / cycles_per_sec;
+                avg_us_spent_building_ = (average_building_cycles * 1000000ULL) / cycles_per_sec;
 
                 // Reset any counters
                 frames_per_second = 0;
@@ -154,6 +156,7 @@ namespace FrameProcessor
             }
             else
             {
+                start_building = rte_get_tsc_cycles();
                 frame_number = decoder_->get_super_frame_number(current_super_frame_buffer_);
 
                 if((prev_frame_number + 1) == frame_number)
@@ -248,6 +251,8 @@ namespace FrameProcessor
                 
                 average_building_cycles = 
                     (average_building_cycles + (rte_get_tsc_cycles() - start_building)) / 2;
+
+                cycles_working = cycles_working + (rte_get_tsc_cycles() - start_building);
 
                 frames_per_second++;
                 built_frames_++;
