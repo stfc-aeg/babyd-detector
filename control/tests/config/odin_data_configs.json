@@ -1,7 +1,7 @@
 {
   "babyd": {
     "acquisition_config": {
-      "hibirdsdpdk": {
+      "Babyd": {
         "update_config": true,
         "rx_enable": false,
         "proc_enable": true,
@@ -17,7 +17,7 @@
       }
     },
     "start_config": {
-      "hibirdsdpdk": {
+      "Babyd": {
         "update_config": true,
         "rx_enable": true
       },
@@ -26,10 +26,28 @@
       }
     },
     "stop_config": {
-      "hibirdsdpdk": {
+      "Babyd": {
         "update_config": true,
         "rx_enable": false,
+        "rx_frames": 0
+      },
+      "hdf": {
+        "write": false
+      }
+    },
+    "arm_config": {
+      "Babyd" : {
+        "update_config": true, 
         "proc_enable": true
+      }, 
+      "hdf": {
+        "write": false
+      }
+    },
+    "lv_config": {
+      "Babyd": {
+        "update_config": true,
+        "rx_enable": true
       },
       "hdf": {
         "write": false

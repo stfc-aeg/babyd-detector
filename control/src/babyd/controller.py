@@ -11,6 +11,7 @@ from .capture.capture_manager import CaptureManager
 from .utilities.loaded_adapters import Adapters
 from .interfaces.loki_params import LokiParams
 from .interfaces.adxdma_params import AlphaDataParams
+from .live_data.ipc_liveview import IpcLiveView
 from .utilities.util import iac_get, iac_set
 
 class BabyDController:
@@ -42,6 +43,7 @@ class BabyDController:
         except Exception as e:
             logging.error(f"Failed to initialize adapter: {e}")
 
+        self.liveview = IpcLiveView()
         self.loki = LokiParams(self.adapters.loki_proxy)
         self.adxdma = AlphaDataParams(self.adapters.adxdma)
         self.capture_manager = CaptureManager(self.adapters.munir, self.frame_rate)
@@ -97,7 +99,8 @@ class BabyDController:
         self.param_tree = ParameterTree({
             'loki': loki_tree,
             'adxdma': adxdma_tree,
-            'munir': munir_tree            
+            'munir': munir_tree, 
+            'liveview': (lambda: self.liveview.rendered_frame, None)        
         })
 
     def get(self, path):

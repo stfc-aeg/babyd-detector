@@ -92,6 +92,8 @@ class CaptureManager:
         while iac_get(self.munir, 'subsystems/babyd/status/executing'):
             logging.info("Waiting for file writing")
             time.sleep(1)
+        logging.debug("resuming liveview")
+        iac_set(self.munir, 'subsystems/babyd/', {'start_lv_frames':True})
 
     def execute_on_munir(self, file_path, file_name, frames):
         """Set the execution arguments on Munir and start the capture"""
