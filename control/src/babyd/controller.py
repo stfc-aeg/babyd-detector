@@ -49,6 +49,8 @@ class BabyDController:
         self.capture_manager = CaptureManager(self.adapters.munir, self.frame_rate)
         self.state_machine = CaptureStateMachine(self.capture_manager)
 
+        logging.debug(f"Adxdma dynamic properties: {self.adxdma.get_dynamic_properties()}")
+
         self.get_munir_args()
         self.background_task()
 
@@ -68,17 +70,22 @@ class BabyDController:
             'ready': (lambda: self.loki.ready, None)
         })
 
-        adxdma_tree = ParameterTree({
+        # create adxdma_tree dict with static properties
+        adxdma_tree_dict = {
             'connected': (lambda: self.adxdma.connected, lambda value: setattr(self.adxdma, 'connected', value)),
-            'ch0_frame_count': (lambda: self.adxdma.ch0_fc, None),
-            'ch1_frame_count': (lambda: self.adxdma.ch1_fc, None),
             'ip_local': (lambda: self.adxdma.ip_local, lambda value: setattr(self.adxdma, 'ip_local', value)),
             'ip_remote': (lambda: self.adxdma.ip_remote, lambda value: setattr(self.adxdma, 'ip_remote', value)),
-            'link0_status': (lambda: self.adxdma.link0_status, None),
-            'link1_status': (lambda: self.adxdma.link1_status, None),
             'available_clock_speeds': (lambda: self.adxdma.available_speeds, None),
             'clock_speed': (lambda: self.adxdma.clock_speed, lambda value: setattr(self.adxdma, 'clock_speed', value))
-        })
+        }
+        
+        # Add the dynamic properties to the adxdma_tree_dict
+        dynamic_properties = self.adxdma.get_dynamic_properties()
+        for name, prop in dynamic_properties.items():
+            adxdma_tree_dict[name] = (prop.fget, None)
+
+        # Create the ParameterTree with all properties
+        adxdma_tree = ParameterTree(adxdma_tree_dict)
 
         munir_tree = ParameterTree({
             'args': {

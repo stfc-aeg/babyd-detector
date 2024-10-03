@@ -1,6 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from functools import partial
 import ipaddress
 import logging
+from typing import Dict, List
 
 from babyd.adxdma.adapter import BabyDAdapter
 
@@ -9,6 +11,52 @@ from ..utilities.util import iac_get, iac_set
 @dataclass
 class AlphaDataParams:
     _adxdma: BabyDAdapter
+    _frame_count_cores: List[str] = field(default_factory=list)
+    _link_status_cores: List[int] = field(default_factory=list)
+    _dynamic_properties: Dict[str, property] = field(default_factory=dict)
+
+    def __post_init__(self):
+        self._initialize_dynamic_properties()
+
+    def _initialize_dynamic_properties(self):
+        # Fetch the current configuration
+        control_data = iac_get(self._adxdma, "control", as_dict=True)
+        logging.debug(f'control data: {control_data}')
+        
+        # Initialise frame count properties
+        frame_count_data = control_data.get('control', {}).get('frame_count', {})
+        self._frame_count_cores = list(frame_count_data.keys())
+        logging.debug(f"Frame count cores: {self._frame_count_cores}")
+        for core in self._frame_count_cores:
+            logging.debug(f"Creating frame count property for core {core}")
+            self._create_frame_count_property(core)
+
+        # Initialise link status properties
+        link_status_data = control_data.get('control', {}).get('link_status', {})
+        self._link_status_cores = list(link_status_data.keys())
+        logging.debug(f"Link status cores: {self._link_status_cores}")
+        for core in self._link_status_cores:
+            logging.debug(f"Creating link status property for core {core}")
+            self._create_link_status_property(core)
+
+    def _create_frame_count_property(self, core):
+        def getter(core):
+            return iac_get(self._adxdma, f"control/frame_count/{core}")
+        setter = lambda self, value: logging.error(f"Frame count for core {core} is non-mutable")
+        prop = property(partial(getter, core), setter)
+        setattr(self.__class__, f"frame_count_{core}", prop)
+        self._dynamic_properties[f"frame_count_{core}"] = prop
+
+    def _create_link_status_property(self, core):
+        def getter(core):
+            return iac_get(self._adxdma, f"control/link_status/{core}")
+        setter = lambda self, value: logging.error(f"Link status for core {core} is non-mutable")
+        prop = property(partial(getter, core), setter)
+        setattr(self.__class__, f"link_status_{core}", prop)
+        self._dynamic_properties[f"link_status_{core}"] = prop
+
+    def get_dynamic_properties(self) -> Dict[str, property]:
+        return self._dynamic_properties
 
     @property
     def available_speeds(self):
@@ -46,39 +94,6 @@ class AlphaDataParams:
         self.set_ip(value, "ip_remote")
     
     @property
-    def link0_status(self):
-        return iac_get(self._adxdma, "control/link_status/link0")
-    
-    @link0_status.setter
-    def link0_status(self, value):
-        logging.error("Link0_status is non mutable, ignoring value provided")
-
-    @property
-    def link1_status(self):
-        return iac_get(self._adxdma, "control/link_status/link1")
-    
-    @link1_status.setter
-    def link1_status(self, value):
-        logging.error("Link1_status is non mutable, ignoring value provided")
-
-    @property
-    def ch0_fc(self):
-        """Channel 0 Frame count"""
-        return iac_get(self._adxdma, "control/frame_count/ch0")
-    
-    @ch0_fc.setter
-    def ch0_fc(self, value):
-        logging.error("ch0_fc is non mutable, ignoring value provided")
-
-    @property
-    def ch1_fc(self):
-        return iac_get(self._adxdma, "control/frame_count/ch1")
-    
-    @ch1_fc.setter
-    def ch1_fc(self, value):
-        logging.error("ch1_fc is non mutable, ignoring value provided")
-
-    @property
     def connected(self):
         return iac_get(self._adxdma, "control/is_connected")
     
@@ -92,8 +107,6 @@ class AlphaDataParams:
             logging.info("triggering disconnected")
         else:
             logging.error(f'Value: {value} invalid, provide Bool')
-
-
 
     def set_ip(self, ip, path):
         try:
