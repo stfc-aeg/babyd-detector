@@ -18,9 +18,11 @@ namespace FrameProcessor
                                         decoder_(dpdkWorkCoreReferences.decoder),
                                         shared_buf_(dpdkWorkCoreReferences.shared_buf),
                                         built_frames_(0),
-                                        built_frames_hz_(0),
+                                        built_frames_hz_(1),
                                         idle_loops_(0),
-                                        avg_us_spent_building_(0),
+                                        mean_us_on_frame_(0),
+                                        maximum_us_on_frame_(0),
+                                        core_usage_(1),
                                         out_of_order_frames_(0),
                                         in_order_frames_(0)
     {
@@ -105,16 +107,19 @@ namespace FrameProcessor
         std::size_t payload_size = decoder_->get_payload_size();
 
         // Status reporting variables
-        uint64_t frames_per_second = 0;
-        uint64_t last = rte_get_tsc_cycles();
-        uint64_t cycles_per_sec = rte_get_tsc_hz();
-        float core_useage = 1;
-        uint64_t cycles_working = 1;
-        uint64_t start_building = 1;
-        uint64_t average_building_cycles = 1;
         bool first_frame = true;
         uint64_t prev_frame_number = 1;
         uint64_t frame_number = 1;
+
+        // Status reporting variables
+        uint64_t frames_per_second = 1;
+        uint64_t last = rte_get_tsc_cycles();
+        uint64_t cycles_per_sec = rte_get_tsc_hz();
+        uint64_t cycles_working = 1;
+        uint64_t start_frame_cycles = 1;
+        uint64_t average_frame_cycles = 1;
+        uint64_t total_frame_cycles = 1;
+        uint64_t maximum_frame_cycles = 1;
 
         // Create a buffer for a single frame, we set this to zero on creation
         uint16_t frame_buffer[256] = { 0 };
@@ -138,13 +143,17 @@ namespace FrameProcessor
             if (unlikely((now - last) >= (cycles_per_sec)))
             {
                 // Update any monitoring variables every second
-                built_frames_hz_ = frames_per_second;
-                avg_us_spent_building_ = (average_building_cycles * 1000000ULL) / cycles_per_sec;
+                built_frames_hz_ = frames_per_second - 1;
+                mean_us_on_frame_ = (total_frame_cycles * 1000000) / (frames_per_second * cycles_per_sec);
+                core_usage_ = (cycles_working * 255) / cycles_per_sec;
+
+                maximum_us_on_frame_ = (maximum_frame_cycles * 1000000) / (cycles_per_sec);
 
                 // Reset any counters
-                frames_per_second = 0;
+                frames_per_second = 1;
                 idle_loops_ = 0;
-                average_building_cycles = 0;
+                total_frame_cycles = 1;
+                cycles_working = 1;
                 last = now;
             }
             // Attempt to dequeue a new frame object
@@ -156,7 +165,7 @@ namespace FrameProcessor
             }
             else
             {
-                start_building = rte_get_tsc_cycles();
+                start_frame_cycles = rte_get_tsc_cycles();
                 frame_number = decoder_->get_super_frame_number(current_super_frame_buffer_);
 
                 if((prev_frame_number + 1) == frame_number)
@@ -249,10 +258,17 @@ namespace FrameProcessor
                 rte_ring_enqueue(
                     downstream_rings_[frame_number % (config_.num_downstream_cores)], current_super_frame_buffer_);
                 
-                average_building_cycles = 
-                    (average_building_cycles + (rte_get_tsc_cycles() - start_building)) / 2;
 
-                cycles_working = cycles_working + (rte_get_tsc_cycles() - start_building);
+                // Update status
+                uint64_t cycles_spent = rte_get_tsc_cycles() - start_frame_cycles;
+                total_frame_cycles += cycles_spent;
+                cycles_working += cycles_spent;
+                
+                if (maximum_frame_cycles < cycles_spent)
+                {
+                    maximum_frame_cycles = cycles_spent;
+                }
+                
 
                 frames_per_second++;
                 built_frames_++;
@@ -284,19 +300,25 @@ namespace FrameProcessor
 
         std::string status_path = path + "/BabydFrameBuilderCore_" + std::to_string(proc_idx_) + "/";
 
-        status.set_param(status_path + "frames_built", built_frames_);
+        // Create path for updstream ring status
+        std::string ring_status = status_path + "upstream_rings/";
 
-        status.set_param(status_path + "frames_built_hz", built_frames_hz_);
+        // Create path for timing status
+        std::string timing_status = status_path + "timing/";
 
+        // Frame status reporting
+        status.set_param(status_path + "frames_processes", built_frames_);
+        status.set_param(status_path + "frames_processed_per_second", built_frames_hz_);
         status.set_param(status_path + "idle_loops", idle_loops_);
+        status.set_param(status_path + "core_useage", (int)core_usage_);
 
-        status.set_param(status_path + "average_us_compressing", avg_us_spent_building_);
+        // Core timing status reporting
+        status.set_param(timing_status + "mean_frame_us", mean_us_on_frame_);
+        status.set_param(timing_status + "max_frame_us", maximum_us_on_frame_);
 
-        status.set_param(status_path + ring_name_str(config_.upstream_core, socket_id_, proc_idx_), rte_ring_count(upstream_ring));
-
-        status.set_param(status_path + "out_of_order_frames", out_of_order_frames_);
-
-        status.set_param(status_path + "in_order_frames", in_order_frames_);
+        // Upstream ring status
+        status.set_param(ring_status + ring_name_str(config_.upstream_core, socket_id_, proc_idx_) + "_count", rte_ring_count(upstream_ring));
+        status.set_param(ring_status + ring_name_str(config_.upstream_core, socket_id_, proc_idx_) + "_size", rte_ring_get_size(upstream_ring));
     }
 
     bool BabydFrameBuilderCore::connect(void)

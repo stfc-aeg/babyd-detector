@@ -20,7 +20,6 @@ struct X10GPacketHeader : PacketHeader
     uint8_t _unused_1;
     uint8_t padding_bytes;
     uint8_t readout_lane;
-    //rte_be64_t padding[6];
 } __rte_packed;
 
 struct X10GRawFrameHeader : RawFrameHeader

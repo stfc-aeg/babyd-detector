@@ -46,6 +46,8 @@ namespace FrameProcessor
     LOG4CXX_INFO(logger_, "Plugin name: " << this->get_name());
     FrameCallback frame_callback = boost::bind(&BabydPlugin::process_frame, this, _1);
 
+    LOG4CXX_INFO(logger_, "Configuration requested for Babyd  plugin: " << &config);
+
     DpdkFrameProcessorPlugin::configure(config, reply, &decoder_, frame_callback);
 
   }
