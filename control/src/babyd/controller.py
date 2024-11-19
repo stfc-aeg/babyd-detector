@@ -33,7 +33,7 @@ class BabyDController:
         self.background_task_en = True
 
         # Frame rate of babd to use for converting time based capture definiton into frames
-        self.frame_rate = 30
+        self.frame_rate = 533000
 
     def initialize_adapters(self, adapters):
         """Get access to all of the other adapters."""
@@ -67,22 +67,29 @@ class BabyDController:
             'connected': (lambda: self.loki.connected, lambda value: setattr(self.loki, 'connected', value)),
             'initialised': (lambda: self.loki.initialised, lambda value: setattr(self.loki, 'initialised', value)),
             'sync': (lambda: self.loki.sync, lambda value: setattr(self.loki, 'sync', value)),
-            'ready': (lambda: self.loki.ready, None)
+            'ready': (lambda: self.loki.ready, None),
         })
+
+        adxdma_trigger = {
+            'available_modes': (lambda: self.adxdma.available_triggers, lambda value: setattr(self.adxdma, 'available_triggers', value)),
+            'mode': (lambda: self.adxdma.trigger_mode, lambda value: setattr(self.adxdma, 'trigger_mode', value)),
+            'frame_per_event': (lambda: self.adxdma.frame_per_event, lambda value: setattr(self.adxdma, 'frame_per_event', value))
+        }
 
         # create adxdma_tree dict with static properties
         adxdma_tree_dict = {
             'connected': (lambda: self.adxdma.connected, lambda value: setattr(self.adxdma, 'connected', value)),
             'ip_local': (lambda: self.adxdma.ip_local, lambda value: setattr(self.adxdma, 'ip_local', value)),
             'ip_remote': (lambda: self.adxdma.ip_remote, lambda value: setattr(self.adxdma, 'ip_remote', value)),
-            'available_clock_speeds': (lambda: self.adxdma.available_speeds, None),
-            'clock_speed': (lambda: self.adxdma.clock_speed, lambda value: setattr(self.adxdma, 'clock_speed', value))
+            'available_clock_speeds': (lambda: self.adxdma.available_speeds, lambda value: setattr(self.adxdma, 'available_speeds', value)),
+            'clock_speed': (lambda: self.adxdma.clock_speed, lambda value: setattr(self.adxdma, 'clock_speed', value)),
+            'trigger': adxdma_trigger
         }
         
         # Add the dynamic properties to the adxdma_tree_dict
         dynamic_properties = self.adxdma.get_dynamic_properties()
         for name, prop in dynamic_properties.items():
-            adxdma_tree_dict[name] = (prop.fget, None)
+            adxdma_tree_dict[name] = (prop.fget, prop.fset)
 
         # Create the ParameterTree with all properties
         adxdma_tree = ParameterTree(adxdma_tree_dict)
@@ -182,8 +189,8 @@ class BabyDController:
 
     def update_loki_state(self):
         """Update the Loki state by performing an IAC GET."""
-        params = iac_get(self.adapters.loki_proxy, "node_1/application/system_state")
-        self.loki.update_system_state(params)
+        params = iac_get(self.adapters.loki_proxy, "node_1/application")
+        self.loki.update_param_tree(params)
 
     def get_munir_args(self):
         """Get the latest args from munir, and apply them to own params"""

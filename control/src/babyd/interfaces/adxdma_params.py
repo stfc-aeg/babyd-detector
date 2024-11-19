@@ -19,43 +19,64 @@ class AlphaDataParams:
         self._initialize_dynamic_properties()
 
     def _initialize_dynamic_properties(self):
-        # Fetch the current configuration
+        # Fetch the control structure from adxdma adapter
         control_data = iac_get(self._adxdma, "control", as_dict=True)
-        logging.debug(f'control data: {control_data}')
-        
-        # Initialise frame count properties
-        frame_count_data = control_data.get('control', {}).get('frame_count', {})
-        self._frame_count_cores = list(frame_count_data.keys())
-        logging.debug(f"Frame count cores: {self._frame_count_cores}")
-        for core in self._frame_count_cores:
-            logging.debug(f"Creating frame count property for core {core}")
-            self._create_frame_count_property(core)
-
-        # Initialise link status properties
+        # create a list of the link status entries and the length of this list
         link_status_data = control_data.get('control', {}).get('link_status', {})
         self._link_status_cores = list(link_status_data.keys())
-        logging.debug(f"Link status cores: {self._link_status_cores}")
+        self.link_status_length = len(self._link_status_cores)
+        # for each link status core create a link status property
         for core in self._link_status_cores:
-            logging.debug(f"Creating link status property for core {core}")
             self._create_link_status_property(core)
 
+        # create a list of the frame count entries
+        frame_count_data = control_data.get('control', {}).get('frame_count', {})
+        self._frame_count_cores = list(frame_count_data.keys())
+        # for each frame count core create a link status property
+        for core in self._frame_count_cores:
+            self._create_frame_count_property(core)
+
     def _create_frame_count_property(self, core):
-        def getter(core):
-            return iac_get(self._adxdma, f"control/frame_count/{core}")
-        setter = lambda self, value: logging.error(f"Frame count for core {core} is non-mutable")
-        prop = property(partial(getter, core), setter)
-        setattr(self.__class__, f"frame_count_{core}", prop)
-        self._dynamic_properties[f"frame_count_{core}"] = prop
+        """
+        Create the frame count properties in the AlphaDataParams dataclass for use in
+        the adxdma parameter tree.
+        
+        Creates a getter that uses iac_get and a custom path to the frame count for the 
+        core passed to the function, creates a setter that prevents values being set, 
+        adjusts the name of the parameter so that it matches up with the link status cores
+        and then assigns this to the dynamic properties dict.
+        
+        :param core: The Frame count core to target
+        """
+        # create a getter that uses an iac_get and the core path to target
+        getter = lambda: iac_get(self._adxdma, f"control/frame_count/{core}")
+        # create a setter that blocks values being set
+        setter = lambda value: logging.error(f"Frame count for core {core} is non-mutable")
+        # create a propety that uses the getter as the fget and setter as the fset
+        # Wrapped in partials as property expects its args to behave as functions
+        prop = property(partial(getter), partial(setter))
+        # adjust the name of core so that it related to the corresponding link status core
+        adjusted_core = int(core) - self.link_status_length
+        # add the generated property to the list of dynamic properties
+        self._dynamic_properties[f"frame_count_{adjusted_core}"] = prop
 
     def _create_link_status_property(self, core):
-        def getter(core):
-            return iac_get(self._adxdma, f"control/link_status/{core}")
-        setter = lambda self, value: logging.error(f"Link status for core {core} is non-mutable")
-        prop = property(partial(getter, core), setter)
-        setattr(self.__class__, f"link_status_{core}", prop)
+        """
+        Create the link status properties in the AlphaDataParams dataclass for use in
+        the adxdma parameter tree.
+        
+        Creates a getter that uses iac_get and a custom path to the link status for the 
+        core passed to the function, creates a setter that prevents values being set and
+        then assigns this to the dynamic properties dict.
+        
+        :param core: The Frame count core to target
+        """
+        getter = lambda: iac_get(self._adxdma, f"control/link_status/{core}")
+        setter = lambda value: logging.error(f"Link status for core {core} is non-mutable")
+        prop = property(partial(getter), partial(setter))
         self._dynamic_properties[f"link_status_{core}"] = prop
 
-    def get_dynamic_properties(self) -> Dict[str, property]:
+    def get_dynamic_properties(self):
         return self._dynamic_properties
 
     @property
@@ -107,6 +128,36 @@ class AlphaDataParams:
             logging.info("triggering disconnected")
         else:
             logging.error(f'Value: {value} invalid, provide Bool')
+
+    @property
+    def available_triggers(self):
+        return iac_get(self._adxdma, "control/trigger/options" )
+    
+    @available_triggers.setter
+    def available_triggers(self, value):
+        logging.error('Trigger options are non mutable, ignoring value provided')
+
+    @property
+    def trigger_mode(self):
+        return iac_get(self._adxdma, "control/trigger/mode")
+    
+    @trigger_mode.setter
+    def trigger_mode(self, value):
+        if value in self.available_triggers:
+            iac_set(self._adxdma, "control/trigger/", "mode", value)
+        else:
+            logging.error(f"Trigger mode: {value} invalid")
+
+    @property
+    def frame_per_event(self):
+        return iac_get(self._adxdma, "control/trigger/frame_per_event")
+    
+    @frame_per_event.setter
+    def frame_per_event(self, value):
+        if type(value) == int:
+            iac_set(self._adxdma, "control/trigger/", "frame_per_event", value)
+        else:
+            logging.error(f"Value: {value} invalid, provide integer value")
 
     def set_ip(self, ip, path):
         try:
