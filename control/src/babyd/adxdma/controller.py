@@ -65,7 +65,7 @@ class BabyDController(AlphaDataController):
         # })
 
         self.add_param('link_status', {
-            reg_num: {field_name: (partial(self.read_field, register=reg_ref, field_addr=field_addr), None)
+            str(reg_num): {field_name: (partial(self.read_field, register=reg_ref, field_addr=field_addr), None)
                       for field_name, field_addr in reg_ref.fields.items()}
             for (reg_num, reg_ref) in enumerate(self.link_statuses)
         })
