@@ -117,17 +117,17 @@ function ButtonTitleCard({ title, children, actions }) {
 function App() {
   const endpoint_url = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ENDPOINT_URL : window.location.origin;
   const munirEndpoint = useAdapterEndpoint('babyd', endpoint_url, 500);
-  const ADXDMAEndpoint = useAdapterEndpoint('babyd/adxdma', 'http://192.168.0.30:8888', 500);
-  const DirectLokiEndpoint = useAdapterEndpoint('detector', 'http://192.168.0.157:8888', 500);
+  const LokiProxyEndpoint = useAdapterEndpoint('loki_proxy', endpoint_url, 500);
+
   const captures = munirEndpoint?.data.munir?.captures || {};
   const frame_data = munirEndpoint?.data?.liveview || [];
   const isADXDMAConnected = munirEndpoint?.data?.adxdma?.connected;
   const isLOKIConnected = munirEndpoint?.data?.loki?.connected;
   const isLOKIInitialised = munirEndpoint?.data?.loki?.initialised;
   const isFrameBasedCapture = munirEndpoint?.data?.munir?.args?.frame_based_capture;
-  const isLokiBoardResponding = Object.keys(DirectLokiEndpoint.data).length > 0;
+  const isLokiBoardResponding = LokiProxyEndpoint?.data?.node_1 ? Object.keys(LokiProxyEndpoint.data.node_1).length > 0 : false;
 
-  return (
+   return (
     <OdinApp title="BabyD Top Level Control" navLinks={['Captures', 'LOKI', 'ADXDMA']}>
       <TitleCard title="Capture Settings">
         <Container fluid>
@@ -190,7 +190,7 @@ function App() {
                         <th style={{ width: '15%' }}>Capture ID</th>
                         <th style={{ width: '30%' }}>File</th>
                         <th style={{ width: '20%' }}>Estimated Time</th>
-                        <th style={{ width: '15%' }}>Delay</th>
+                        <th style={{ width: '15%' }}>Delays</th>
                         <th style={{ width: '20%' }}>Actions</th>
                       </tr>
                     </thead>
@@ -263,11 +263,11 @@ function App() {
               <StatusBox label="Board Status">{isLokiBoardResponding ? 'Connected' : 'Disconnected'}</StatusBox>
               </Col>
               <Col sm={12} md={6} lg={4} xl={4} xxl={4}>
-              <StatusBox label="CPU">{Math.round(DirectLokiEndpoint.data.environment?.temperature?.zynq_ps) + " \u00b0C" }</StatusBox>
+              <StatusBox label="CPU">{Math.round(LokiProxyEndpoint?.data?.node_1?.environment?.temperature?.zynq_ps) + " \u00b0C" }</StatusBox>
 
               </Col>
               <Col sm={12} md={6} lg={4} xl={4} xxl={4}>
-              <StatusBox label="Board">{Math.round(DirectLokiEndpoint.data.environment?.temperature?.BOARD) + " \u00b0C" }</StatusBox>
+              <StatusBox label="Board">{Math.round(LokiProxyEndpoint?.data?.node_1?.environment?.temperature?.BOARD) + " \u00b0C" }</StatusBox>
               </Col>
             </Row>
           </TitleCard>
@@ -313,10 +313,10 @@ function App() {
               </div> }>
                 <Row>
                   <Col sm={12} md={6} lg={4} xl={4} xxl={4}>
-                    <StatusBox label="BabyD ASIC">{DirectLokiEndpoint.data?.application?.system_state?.ASIC_EN ? 'Enabled' : 'Disabled'}</StatusBox>
+                    <StatusBox label="BabyD ASIC">{LokiProxyEndpoint?.data?.node_1?.application?.system_state?.ASIC_EN ? 'Enabled' : 'Disabled'}</StatusBox>
                   </Col>
                   <Col sm={12} md={6} lg={4} xl={4} xxl={4}>
-                  <StatusBox label="BabyD Chip ">{DirectLokiEndpoint.data?.environment?.temperature?.BD_MIC_IN + " \u00b0C"}</StatusBox>
+                  <StatusBox label="BabyD Chip ">{LokiProxyEndpoint?.data?.node_1?.environment?.temperature?.BD_MIC_IN + " \u00b0C"}</StatusBox>
                   </Col>
                   <Col sm={12} md={6} lg={4} xl={4} xxl={4}>
                   </Col>
