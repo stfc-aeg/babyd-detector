@@ -34,6 +34,8 @@ class CaptureStateMachine(StateMachine):
         logging.debug(f'Entered on_start_preparing, current state: {self.current_state}')
         if self.capture_manager.has_captures():
             self.capture = self.capture_manager.get_next_capture()
+            logging.debug(f"Waiting for {self.capture.delay} seconds before capture")
+            time.sleep(self.capture.delay)
             self.start_executing()
             logging.debug(f"Capture returned from capture_manager, Executing: {self.capture}")
         else:
@@ -67,9 +69,6 @@ class CaptureStateMachine(StateMachine):
         logging.debug("File writing finished")
         if self.capture_manager.has_captures():
             logging.debug("Preparing another capture")
-            if self.capture:
-                logging.debug(f"Waiting for {self.capture.delay} seconds before next capture")
-                time.sleep(self.capture.delay)
             self.start_preparing()
             logging.debug(f'After prepare_another, current state: {self.current_state}')
         else:

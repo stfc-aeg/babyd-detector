@@ -36,3 +36,8 @@
     transform: rotate(360deg);
   }
 }
+
+.table {
+  border-collapse: collapse;
+  border: 1px solid #dee2e6; /* Adjust color as needed */
+}

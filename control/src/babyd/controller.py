@@ -3,6 +3,7 @@ from tornado.concurrent import run_on_executor
 from functools import partial
 import logging
 import time
+import shutil
 
 from odin.adapters.parameter_tree import ParameterTree
 
@@ -31,6 +32,7 @@ class BabyDController:
         # Value to indicate if BabyDController is executing a capture/set of captures, seperate from hdf file writing status
         self.executing = False
         self.background_task_en = True
+        self.free_space_bytes = 0
 
         # Frame rate of babd to use for converting time based capture definiton into frames
         self.frame_rate = 533000
@@ -107,7 +109,8 @@ class BabyDController:
                 )),
             'execute': (lambda: self.executing, self.execute_captures),
             'remove_capture': (lambda: None, self.capture_manager.remove_capture),
-            'duplicate_capture': (lambda: None, self.capture_manager.duplicate_capture)
+            'duplicate_capture': (lambda: None, self.capture_manager.duplicate_capture),
+            'free_space': (lambda: self.free_space_bytes, None)
         })
 
         self.param_tree = ParameterTree({
@@ -131,17 +134,26 @@ class BabyDController:
     
     @run_on_executor
     def background_task(self):
-        """Background task that periodically updates Loki state and starts executing captures if ."""
+        """Background task that periodically updates Loki state and starts executing captures."""
         while self.background_task_en:
             self.update_loki_state()
+
+            try:
+                total, used, free = shutil.disk_usage(self.file_path)
+                self.free_space_bytes = free
+            except FileNotFoundError:
+                logging.error(f"File path {self.file_path} does not exist. Free space check failed.")
+                self.free_space_bytes = 0
             time.sleep(0.2)  # Polling interval
             # Use the executing variable to act as trigger to begin captures
             if self.executing:
                 if self.capture_manager.has_captures():
-                    logging.debug("Telling statemachine to begin")
+                    logging.debug("Telling statemachine to begin with staged captures")
                     self.state_machine.start_preparing()
                 else:
-                    logging.debug("No captures in the capture manager")
+                    logging.debug("No captures in the capture manager, adding current parameters to capture, telling statement to begin")
+                    self.capture_manager.add_capture(self.file_path, self.file_name, self.num_intervals, self.delay, self.frame_based_capture)
+                    self.state_machine.start_preparing()
             self.executing = False
 
     def execute_captures(self, value=None):
