@@ -41,3 +41,17 @@
   border-collapse: collapse;
   border: 1px solid #dee2e6; /* Adjust color as needed */
 }
+
+.odin-graph-container {
+  position: relative;
+  width: 100%; /* Adjust width as needed */
+  padding-top: 100%; /* This maintains the aspect ratio */
+}
+
+.odin-graph {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

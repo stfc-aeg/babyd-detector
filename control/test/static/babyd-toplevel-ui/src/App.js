@@ -260,7 +260,7 @@ function App() {
               </Row>
             </Col>
             <Col sm={12} md={12} lg={12} xl={12} xxl={5}>
-              <OdinGraph title='Built Live Frame Preview' type='heatmap' prop_data={frame_data} colorscale='viridis'></OdinGraph>
+              <OdinGraph title='Built Live Frame Preview' type='heatmap' prop_data={frame_data} colorscale='viridis' width={500} height={500} ></OdinGraph>
             </Col>
           </Row>
         </Container>

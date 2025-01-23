@@ -141,7 +141,7 @@ class BabyDController:
             try:
                 total, used, free = shutil.disk_usage(self.file_path)
                 self.free_space_bytes = free
-            except FileNotFoundError:
+            except:
                 logging.error(f"File path {self.file_path} does not exist. Free space check failed.")
                 self.free_space_bytes = 0
             time.sleep(0.2)  # Polling interval
