@@ -112,12 +112,17 @@ class BabyDController:
             'duplicate_capture': (lambda: None, self.capture_manager.duplicate_capture),
             'free_space': (lambda: self.free_space_bytes, None)
         })
+        
+        liveview_tree = ParameterTree({
+            'dark_correct_active': (lambda: self.liveview.dark_correct_active, lambda value: setattr(self.liveview, 'dark_correct_active', value)),
+            'liveview': (lambda: self.liveview.rendered_frames, None),
+        })
 
         self.param_tree = ParameterTree({
             'loki': loki_tree,
             'adxdma': adxdma_tree,
-            'munir': munir_tree, 
-            'liveview': (lambda: self.liveview.rendered_frame, None)        
+            'munir': munir_tree,
+            'liveview': liveview_tree        
         })
 
     def get(self, path):
