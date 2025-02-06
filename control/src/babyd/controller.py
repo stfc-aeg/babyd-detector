@@ -115,7 +115,8 @@ class BabyDController:
         
         liveview_tree = ParameterTree({
             'dark_correct_active': (lambda: self.liveview.dark_correct_active, lambda value: setattr(self.liveview, 'dark_correct_active', value)),
-            'liveview': (lambda: self.liveview.rendered_frames, None),
+            'dark_correct_capture': (lambda: self.liveview.dark_correct_capture, lambda value: setattr(self.liveview, 'dark_correct_capture', value)),
+            'frame_data': (lambda: self.liveview.rendered_frames, None),
         })
 
         self.param_tree = ParameterTree({

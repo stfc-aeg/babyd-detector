@@ -170,6 +170,7 @@ class IpcLiveView:
                 return
             else:
                 self.rendered_frames = self._generate_masked_images(self.frame_data)
+                self.rendered_frames['built'] = self.frame_data.tolist()
 
         except Exception as e:
             logging.error(f"Error processing IPC message: {e}")

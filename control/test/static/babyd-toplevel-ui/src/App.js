@@ -11,6 +11,8 @@ import Button from 'react-bootstrap/Button';
 import { Table, InputGroup, Dropdown, Card } from 'react-bootstrap';
 
 import Alert from 'react-bootstrap/Alert';
+import React, { useState } from 'react';
+import Plot from 'react-plotly.js';
 
 import { TitleCard, ToggleSwitch, DropdownSelector, OdinApp, OdinGraph, StatusBox } from 'odin-react';
 import { WithEndpoint, useAdapterEndpoint } from 'odin-react';
@@ -114,25 +116,98 @@ function ButtonTitleCard({ title, children, actions }) {
   );
 }
 
+export const fallbackFrameData = {
+  liveview: {
+    frame_data: {
+      built: [
+        [0,6,11,7,5,0,3,0,2,0,8,0,11,9,5,9],
+        [0,0,0,2,0,6,7,7,0,0,4,0,3,0,1,2],
+        [0,0,9,9,4,4,0,0,3,0,0,0,10,2,0,0],
+        [0,0,0,0,2,8,3,7,0,1,5,0,4,0,9,2],
+        [1,5,0,0,0,4,0,1,8,6,3,0,5,7,0,8],
+        [1,0,0,5,6,0,3,0,0,4,7,0,0,2,2,6],
+        [3,0,0,8,0,0,10,0,0,11,0,2,2,3,0,11],
+        [0,5,3,7,8,2,5,0,8,7,2,3,0,0,0,0],
+        [0,0,0,0,7,3,0,7,0,0,0,0,0,3,8,3],
+        [4,8,1,6,7,5,7,2,0,4,5,3,0,3,0,4],
+        [6,2,0,7,0,1,5,4,7,0,0,4,0,0,0,0],
+        [1,2,0,7,2,3,7,8,7,0,5,10,0,4,0,0],
+        [0,0,0,2,7,11,0,0,0,1,2,10,4,2,0,5],
+        [1,0,1,0,0,12,0,0,0,0,4,0,10,0,3,0],
+        [0,3,1,3,10,8,8,3,6,3,0,12,3,0,0,0],
+        [3,4,0,0,0,7,0,3,0,1,1,0,0,0,6,2]
+      ],
+      coarse: Array(16).fill(Array(16).fill(0)),
+      fine: [
+        [0,6,11,7,5,0,3,0,2,0,8,0,11,9,5,9],
+        [0,0,0,2,0,6,7,7,0,0,4,0,3,0,1,2],
+        [0,0,9,9,4,4,0,0,3,0,0,0,10,2,0,0],
+        [0,0,0,0,2,8,3,7,0,1,5,0,4,0,9,2],
+        [1,5,0,0,0,4,0,1,8,6,3,0,5,7,0,8],
+        [1,0,0,5,6,0,3,0,0,4,7,0,0,2,2,6],
+        [3,0,0,8,0,0,10,0,0,11,0,2,2,3,0,11],
+        [0,5,3,7,8,2,5,0,8,7,2,3,0,0,0,0],
+        [0,0,0,0,7,3,0,7,0,0,0,0,0,3,8,3],
+        [4,8,1,6,7,5,7,2,0,4,5,3,0,3,0,4],
+        [6,2,0,7,0,1,5,4,7,0,0,4,0,0,0,0],
+        [1,2,0,7,2,3,7,8,7,0,5,10,0,4,0,0],
+        [0,0,0,2,7,11,0,0,0,1,2,10,4,2,0,5],
+        [1,0,1,0,0,12,0,0,0,0,4,0,10,0,3,0],
+        [0,3,1,3,10,8,8,3,6,3,0,12,3,0,0,0],
+        [3,4,0,0,0,7,0,3,0,1,1,0,0,0,6,2]
+      ],
+      overflow: Array(16).fill(Array(16).fill(0))
+    }
+  }
+};
+
 function App() {
   const endpoint_url = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_ENDPOINT_URL : window.location.origin;
   const munirEndpoint = useAdapterEndpoint('babyd', endpoint_url, 500);
   const LokiProxyEndpoint = useAdapterEndpoint('loki_proxy', endpoint_url, 500);
 
   const captures = munirEndpoint?.data.munir?.captures || {};
-  const frame_data = munirEndpoint?.data?.liveview || [];
+  const coarse_data = munirEndpoint?.data?.liveview?.frame_data?.coarse || [];
+  const overflow_data = munirEndpoint?.data?.liveview?.frame_data?.overflow || [];
+  const fine_data = munirEndpoint?.data?.liveview?.frame_data?.fine || [];
+  const built_data = munirEndpoint?.data?.liveview?.frame_data?.built || [];
   const isADXDMAConnected = munirEndpoint?.data?.adxdma?.connected;
   const isLOKIConnected = munirEndpoint?.data?.loki?.connected;
   const isLOKIInitialised = munirEndpoint?.data?.loki?.initialised;
   const isFrameBasedCapture = munirEndpoint?.data?.munir?.args?.frame_based_capture;
+  const isDarkCorrecting = munirEndpoint?.data?.babyd?.liveview.dark_correct_active;
   const isLokiBoardResponding = LokiProxyEndpoint?.data?.node_1 ? Object.keys(LokiProxyEndpoint.data.node_1).length > 0 : false;
+
+  const [fineRange, setFineRange] = useState({ min: 0, max: 128 });
+  const [coarseRange, setCoarseRange] = useState({ min: 0, max: 256 });
+  const [overflowRange, setOverflowRange] = useState({ min: 0, max: 1 });
+  const [builtRange, setBuiltRange] = useState({ min: 0, max: 65536 });
 
    return (
     <OdinApp title="BabyD Top Level Control" navLinks={['Captures', 'LOKI', 'ADXDMA']}>
-      <TitleCard title="Capture Settings">
+      <ButtonTitleCard title="Capture Settings" actions={[
+        <EndpointToggleSwitch 
+          endpoint={munirEndpoint} 
+          event_type="click" 
+          label="Frame based capture" 
+          fullpath="munir/args/frame_based_capture" 
+          checked={isFrameBasedCapture} 
+          value={isFrameBasedCapture}>
+        </EndpointToggleSwitch>,         
+        <EndpointToggleSwitch 
+          endpoint={munirEndpoint} 
+          event_type="click" 
+          label="Dark correction" 
+          fullpath="liveview/dark_correct_active" 
+          checked={isDarkCorrecting} 
+          value={isDarkCorrecting}>
+        </EndpointToggleSwitch>, 
+        <EndPointButton endpoint={munirEndpoint} event_type="click" fullpath="liveview/dark_correct_capture" value={true} className="w-100" variant="secondary">
+        Capture Dark Data
+        </EndPointButton>]}>
         <Container fluid>
           <Row>
-            <Col sm={12} md={12} lg={12} xl={12} xxl={7}>
+            <Col sm={12} md={12} lg={12} xl={12} xxl={12}>
               <Row>
                 <Col sm={12} md={3} lg={3}>
                   <InputGroup>
@@ -159,9 +234,9 @@ function App() {
                   </InputGroup>
                 </Col>
               </Row>
-              <Row style={{ paddingTop: '15px' }}>
+              <Row style={{ paddingTop: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
                 <Col sm={12} md={4}>
-                  <EndPointButton endpoint={munirEndpoint} event_type="click" fullpath="munir/stage_capture" value={true} className="w-100" variant="warning">
+                  <EndPointButton endpoint={munirEndpoint} event_type="click" fullpath="munir/stage_capture" value={true} className="w-100" variant="secondary">
                     Stage Capture
                   </EndPointButton>
                 </Col>
@@ -170,17 +245,8 @@ function App() {
                     Execute Captures
                   </EndPointButton>
                 </Col>
-                <Col sm={12} md={4}>
-                <EndpointToggleSwitch 
-                endpoint={munirEndpoint} 
-                event_type="click" 
-                label="Frame based capture" 
-                fullpath="munir/args/frame_based_capture" 
-                checked={isFrameBasedCapture} 
-                value={isFrameBasedCapture}>
-              </EndpointToggleSwitch>
-                </Col>
               </Row>
+ 
 
               <Row style={{ paddingTop: '15px' }}>
                 <Col sm={12}>
@@ -259,12 +325,155 @@ function App() {
                 </Col>
               </Row>
             </Col>
-            <Col sm={12} md={12} lg={12} xl={12} xxl={5}>
-              <OdinGraph title='Built Live Frame Preview' type='heatmap' prop_data={frame_data} colorscale='viridis' width={500} height={500} ></OdinGraph>
+            <Col sm={12} md={12} lg={6} xl={6} xxl={3}>
+              <Plot
+                data={[{
+                  type: 'heatmap',
+                  z: fine_data,
+                  colorscale: 'viridis',
+                  zmin: fineRange.min,
+                  zmax: fineRange.max,
+                }]}
+                layout={{
+                  width: 400,
+                  height: 400,
+                  title: 'Fine Preview',
+                  margin: { t: 30, b: 30, l: 30, r: 30 },
+                  yaxis: { scaleanchor: "x", scaleratio: 1 }
+                }}
+              />
+              <Form className="mt-2">
+                <InputGroup size="sm">
+                  <InputGroup.Text>Range</InputGroup.Text>
+                  <Form.Control 
+                    type="number" 
+                    value={fineRange.min}
+                    onChange={(e) => setFineRange({...fineRange, min: Number(e.target.value)})}
+                    placeholder="Min"
+                  />
+                  <Form.Control 
+                    type="number" 
+                    value={fineRange.max}
+                    onChange={(e) => setFineRange({...fineRange, max: Number(e.target.value)})}
+                    placeholder="Max"
+                  />
+                </InputGroup>
+              </Form>
+            </Col>
+
+            <Col sm={12} md={12} lg={6} xl={6} xxl={3}>
+              <Plot
+                data={[{
+                  type: 'heatmap',
+                  z: coarse_data,
+                  colorscale: 'viridis',
+                  zmin: coarseRange.min,
+                  zmax: coarseRange.max,
+                }]}
+                layout={{
+                  width: 400,
+                  height: 400,
+                  title: 'Coarse Preview',
+                  margin: { t: 30, b: 30, l: 30, r: 30 },
+                  yaxis: { scaleanchor: "x", scaleratio: 1 }
+                }}
+              />
+              <Form className="mt-2">
+                <InputGroup size="sm">
+                  <InputGroup.Text>Range</InputGroup.Text>
+                  <Form.Control 
+                    type="number" 
+                    value={coarseRange.min}
+                    onChange={(e) => setCoarseRange({...coarseRange, min: Number(e.target.value)})}
+                    placeholder="Min"
+                  />
+                  <Form.Control 
+                    type="number" 
+                    value={coarseRange.max}
+                    onChange={(e) => setCoarseRange({...coarseRange, max: Number(e.target.value)})}
+                    placeholder="Max"
+                  />
+                </InputGroup>
+              </Form>
+            </Col>
+            <Col sm={12} md={12} lg={6} xl={6} xxl={3}>
+              <Plot
+                data={[{
+                  type: 'heatmap',
+                  z: overflow_data,
+                  colorscale: 'viridis',
+                  zmin: overflowRange.min,
+                  zmax: overflowRange.max,
+                }]}
+                layout={{
+                  width: 400,
+                  height: 400,
+                  title: 'Overflow Preview',
+                  margin: { t: 30, b: 30, l: 30, r: 30 },
+                  yaxis: { scaleanchor: "x", scaleratio: 1 }
+                }}
+              />
+              <Form className="mt-2">
+                <InputGroup size="sm">
+                  <InputGroup.Text>Range</InputGroup.Text>
+                  <Form.Control 
+                    type="number" 
+                    value={overflowRange.min}
+                    onChange={(e) => setOverflowRange({...overflowRange, min: Number(e.target.value)})}
+                    placeholder="Min"
+                  />
+                  <Form.Control 
+                    type="number" 
+                    value={overflowRange.max}
+                    onChange={(e) => setOverflowRange({...overflowRange, max: Number(e.target.value)})}
+                    placeholder="Max"
+                  />
+                </InputGroup>
+              </Form>
+            </Col>
+            <Col sm={12} md={12} lg={6} xl={6} xxl={3}>
+              <Plot
+                data={[{
+                  type: 'heatmap',
+                  z: built_data,
+                  colorscale: 'viridis',
+                  zmin: builtRange.min,
+                  zmax: builtRange.max,
+                }]}
+                layout={{
+                  width: 400,
+                  height: 400,
+                  title: 'Built Preview',
+                  margin: { t: 30, b: 30, l: 30, r: 30 },
+                  yaxis: { scaleanchor: "x", scaleratio: 1 }
+                }}
+              />
+              <Form className="mt-2">
+                <InputGroup size="sm">
+                  <InputGroup.Text>Range</InputGroup.Text>
+                  <Form.Control 
+                    type="number" 
+                    value={builtRange.min}
+                    onChange={(e) => setBuiltRange({...builtRange, min: Number(e.target.value)})}
+                    placeholder="Min"
+                  />
+                  <Form.Control 
+                    type="number" 
+                    value={builtRange.max}
+                    onChange={(e) => setBuiltRange({...builtRange, max: Number(e.target.value)})}
+                    placeholder="Max"
+                  />
+                </InputGroup>
+              </Form>
             </Col>
           </Row>
+          {/* <Row>
+          <Col sm={12} md={12} lg={12} xl={12} xxl={5}>
+              <OdinGraph title='Built Live Frame Preview' type='heatmap' prop_data={fine_data} colorscale='viridis'></OdinGraph>
+            </Col>
+          </Row> */}
         </Container>
-      </TitleCard>
+      </ButtonTitleCard>
 
 
       <TitleCard title='Loki & BabyD Hardware'>
