@@ -112,12 +112,18 @@ class BabyDController:
             'duplicate_capture': (lambda: None, self.capture_manager.duplicate_capture),
             'free_space': (lambda: self.free_space_bytes, None)
         })
+        
+        liveview_tree = ParameterTree({
+            'dark_correct_active': (lambda: self.liveview.dark_correct_active, lambda value: setattr(self.liveview, 'dark_correct_active', value)),
+            'dark_correct_capture': (lambda: self.liveview.dark_correct_capture, lambda value: setattr(self.liveview, 'dark_correct_capture', value)),
+            'frame_data': (lambda: self.liveview.rendered_frames, None),
+        })
 
         self.param_tree = ParameterTree({
             'loki': loki_tree,
             'adxdma': adxdma_tree,
-            'munir': munir_tree, 
-            'liveview': (lambda: self.liveview.rendered_frame, None)        
+            'munir': munir_tree,
+            'liveview': liveview_tree        
         })
 
     def get(self, path):
@@ -141,7 +147,7 @@ class BabyDController:
             try:
                 total, used, free = shutil.disk_usage(self.file_path)
                 self.free_space_bytes = free
-            except FileNotFoundError:
+            except:
                 logging.error(f"File path {self.file_path} does not exist. Free space check failed.")
                 self.free_space_bytes = 0
             time.sleep(0.2)  # Polling interval

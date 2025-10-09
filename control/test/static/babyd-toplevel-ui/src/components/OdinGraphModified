@@ -1,0 +1,110 @@
+function OdinGraph(props) {
+  var title = props.title,
+    prop_data = props.prop_data,
+    _props$x_data = props.x_data,
+    x_data = _props$x_data === void 0 ? null : _props$x_data,
+    _props$width = props.width,
+    width = _props$width === void 0 ? null : _props$width,
+    _props$height = props.height,
+    height = _props$height === void 0 ? null : _props$height,
+    _props$num_x = props.num_x,
+    num_x = _props$num_x === void 0 ? null : _props$num_x,
+    _props$type = props.type,
+    type = _props$type === void 0 ? 'scatter' : _props$type,
+    _props$series_names = props.series_names,
+    series_names = _props$series_names === void 0 ? [] : _props$series_names,
+    _props$colorscale = props.colorscale,
+    colorscale = _props$colorscale === void 0 ? "Portland" : _props$colorscale,
+    _props$zoom_event_han = props.zoom_event_handler,
+    zoom_event_handler = _props$zoom_event_han === void 0 ? null : _props$zoom_event_han;
+  var _useState = React.useState([{}]),
+    data = _useState[0],
+    changeData = _useState[1];
+  var _useState2 = React.useState({}),
+    layout = _useState2[0],
+    changeLayout = _useState2[1];
+  var get_array_dimenions = function get_array_dimenions(data) {
+    var x = x_data ? x_data.length : data.length;
+    var y = Array.isArray(data[0]) ? data[0].length : 1;
+    console.log("(" + x + ", " + y + ")");
+    return {
+      x: x,
+      y: y
+    };
+  };
+  React.useEffect(function () {
+    console.log("Updating Data");
+    var data_dims = get_array_dimenions(prop_data);
+    var data = [];
+    if (type == "scatter" || type == "line") {
+      if (data_dims.y > 1) {
+        for (var i = 0; i < data_dims.x; i++) {
+          var dataset = {
+            x: x_data ? x_data : Array.from(prop_data[i], function (v, k) {
+              return k;
+            }),
+            y: prop_data[i],
+            type: "scatter",
+            name: series_names[i] || null
+          };
+          data.push(dataset);
+        }
+      } else {
+        var dataset = {
+          x: x_data ? x_data : Array.from(prop_data, function (v, k) {
+            return k;
+          }),
+          y: prop_data,
+          type: "scatter"
+        };
+        data.push(dataset);
+      }
+      changeLayout({
+        yaxis: {
+          autorange: true
+        },
+        width: width || 1,
+        height: height || 1,
+        title: title
+      });
+    } else if (type == "heatmap" || type == "contour") {
+      if (data_dims.y > 1) {
+        var dataset = {
+          z: prop_data,
+          type: type,
+          xaxis: "x",
+          yaxis: "y"
+        };
+        data.push(dataset);
+      } else {
+        var reshape_data = [];
+        for (var i = 0; i < prop_data.length; i += num_x) {
+          reshape_data.push(prop_data.slice(i, i + num_x));
+        }
+        var dataset = {
+          z: reshape_data,
+          type: type,
+          xaxis: "x",
+          yaxis: "y",
+          colorscale: colorscale
+        };
+        data.push(dataset);
+      }
+      changeLayout({
+        zaxis: {
+          autorange: true
+        },
+        width: 1,
+        height: 1,
+        title: title
+      });
+    }
+    changeData(data);
+  }, [prop_data]);
+  return /*#__PURE__*/React__default.createElement(Plot, {
+    data: data,
+    layout: layout,
+    debug: true,
+    onRelayout: zoom_event_handler
+  });
+}
