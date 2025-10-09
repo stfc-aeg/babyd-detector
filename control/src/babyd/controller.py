@@ -143,7 +143,6 @@ class BabyDController:
         """Background task that periodically updates Loki state and starts executing captures."""
         while self.background_task_en:
             self.update_loki_state()
-
             try:
                 total, used, free = shutil.disk_usage(self.file_path)
                 self.free_space_bytes = free
@@ -174,36 +173,6 @@ class BabyDController:
             return
         # acts as a trigger to start the capture process in the background task
         self.executing = True
-        
-
-    # @run_on_executor
-    # def _execute_captures(self, value=None):
-    #     """Execute either staged captures or a single capture in an executor thread to avoid blocking."""
-    #     if self.capture_manager.has_captures():
-    #         while self.capture_manager.has_captures():
-    #             # Use the capture manager to select the next capture based on when it was staged 
-    #             capture = self.capture_manager.get_next_capture()
-    #             logging.debug(f"Executing capture: {capture}")
-                
-    #             self.set_on_munir(capture.file_path, capture.file_name, capture.num_intervals)
-    #             # Wait for the current capture to finish writing to its file before continuing 
-
-    #             self.poll_file_writing()
-
-    #             logging.debug(f"Waiting for {capture.delay} seconds before next capture.")
-    #             time.sleep(capture.delay)
-    #     else:
-    #         # If no captures are staged, execute the current parameters immediately
-    #         num_frames = self.num_intervals
-    #         # Convert time to frames if needed
-    #         if not self.frame_based_capture:
-    #             num_frames = int(self.num_intervals * self.frame_rate) 
-    #         self.set_on_munir(self.file_path, self.file_name, num_frames)
-    #         self.poll_file_writing()
-
-    #     # logging.debug(f'Calling stop execute:')
-    #     # iac_set(self.adapters.munir, "subsystems/babyd/", "stop_execute", True)
-    #     self.executing = False
 
     def update_loki_state(self):
         """Update the Loki state by performing an IAC GET."""
