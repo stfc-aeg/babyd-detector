@@ -1,0 +1,2210 @@
+{
+    "ETHERNET": {
+      "3": {
+        "CMAC_USPLUS_0_BASE": {
+          "addr": 1048576,
+          "size": 4,
+          "readonly": false
+        }
+      }
+    },
+    "UDP": {
+      "CTRL": {
+        "addr": 1179648,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "UDP_MAC_TUSER": 8,
+          "MAC_UDP_TUSER_POLARITY": 5,
+          "UDP_MAC_TUSER_POLARITY": 4
+        }
+      },
+      "MAC_LOCAL": {
+        "addr": 1179652,
+        "size": 8,
+        "readonly": false
+      },
+      "IP_LOCAL": {
+        "addr": 1179660,
+        "size": 4,
+        "readonly": false
+      },
+      "RESET_UOE": {
+        "addr": 1179664,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "STATS": 16,
+          "RECV_APP": 10,
+          "RECV_INGRESS": 9,
+          "RECV_DECODE": 8,
+          "SEND_MUX": 4,
+          "SEND_FRAME": 3,
+          "SEND_ENFRAG": 2,
+          "SEND_INGRESS": 1,
+          "SEND_APP": 0
+        }
+      },
+      "IP_REMOTE": {
+        "addr": 1179672,
+        "size": 4,
+        "readonly": false
+      },
+      "ARP_CTRL": {
+        "addr": 1179680,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "FILTER": [24, 25],
+          "RECV_DUTY": 16,
+          "SEND_DUTY": 8,
+          "TIMER_BASE": 7,
+          "SEND_REQ": 4,
+          "TABLE_SIZE": [2, 3],
+          "USE_DUTY": 1,
+          "RESET": 0
+        }
+      },
+      "ARP_STATUS": {
+        "addr": 1179684,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "RECV_INTERFACE_TREADY": 31,
+          "RECV_INTERFACE_TVALID": 30,
+          "SEND_INTERFACE_TREADY": 29,
+          "SEND_INTERFACE_TVALID": 28,
+          "SEND_INTERFACE_WEN": 27,
+          "SEND_INTERFACE_REN": 26,
+          "SEND_INTERFACE_ACK": 25,
+          "TABLE_SIZE": [16, 17],
+          "GREQ_SENT": 12,
+          "REPLY_RCVD": 11,
+          "REPLY_SENT": 10,
+          "REQ_RCVD": 9,
+          "REQ_SENT": 8
+        }
+      },
+      "ARP_NETMASK": {
+        "addr": 1179688,
+        "size": 4,
+        "readonly": false
+      },
+      "ICMP_CTRL": {
+        "addr": 1179696,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "RECV_DUTY": 16,
+          "SEND_DUTY": 8,
+          "SEND_REQ": 4,
+          "USE_TTL": 3,
+          "USE_IPID": 2,
+          "USE_DUTY": 1,
+          "RESET": 0
+        }
+      },
+      "ICMP_STATUS": {
+        "addr": 1179700,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "RECV_INTERFACE_TREADY": 31,
+          "RECV_INTERFACE_TVALID": 30,
+          "SEND_INTERFACE_TREADY": 29,
+          "SEND_INTERFACE_TVALID": 28,
+          "SEND_INTERFACE_WEN": 27,
+          "SEND_INTERFACE_REN": 26,
+          "SEND_INTERFACE_ACK": 25,
+          "SCRATCHPAD_SIZE": [16, 17],
+          "REPLY_RCVD": 11,
+          "REPLY_SENT": 10,
+          "REQ_RCVD": 9,
+          "REQ_SENT": 8,
+          "STATE": 0
+        }
+      },
+      "TIMER_US": {
+        "addr": 1179712,
+        "size": 4,
+        "readonly": false
+      },
+      "TIMER_EPOCH": {
+        "addr": 1179716,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_DUTY": {
+        "addr": 1179720,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_DUTY": {
+        "addr": 1179724,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_CTRL": {
+        "addr": 1179728,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "IPV4_DF": 8,
+          "IPV4_TTL": 0
+        }
+      },
+      "SEND_APP": {
+        "addr": 1179776,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "TLAST": [20, 21],
+          "TIMEOUT": [18, 19],
+          "FLOW": [16, 17],
+          "NBYTES_LIMIT": [0, 1]
+        }
+      },
+      "SEND_INGRESS": {
+        "addr": 1179780,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "CHKSUM_ZERO": 0
+        }
+      },
+      "SEND_DMA": {
+        "addr": 1179784,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "TDEST": [20, 23],
+          "TDEST_OVERRIDE": 19
+        }
+      },
+      "SEND_ENFRAG": {
+        "addr": 1179788,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "NBYTES": 0,
+          "ENA": 16
+        }
+      },
+      "SEND_FRAME": {
+        "addr": 1179792,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "TUSER_IP_ID": 1,
+          "CHKSUM_ZERO": 0
+        }
+      },
+      "SEND_NCORES": {
+        "addr": 1179796,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "MUX_PAYLOAD_ONLY": 0
+        }
+      },
+      "RECV_DECODE": {
+        "addr": 1179808,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "MTU": [0, 1]
+        }
+      },
+      "RECV_INGRESS": {
+        "addr": 1179816,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "DEFRAG_ENA": 16
+        }
+      },
+      "RECV_APP": {
+        "addr": 1179820,
+        "size": 4,
+        "readonly": false
+      },
+      "WARN_SEND": {
+        "addr": 1179872,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "ENFRAG_LEN_OOB": 8,
+          "DMA_DMA_FULL": 5,
+          "DMA_PAYLOAD_FULL": 4,
+          "APP_TLAST_TIMEOUT": 2,
+          "APP_TLAST_NBYTE": 1,
+          "APP_TLAST_TID_TDEST": 0
+        }
+      },
+      "WARN_RECV": {
+        "addr": 1179876,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "INGRESS_MISSING_FRAG_START": 4,
+          "DECODE_LEN_OFLOW": 0
+        }
+      },
+      "FAULT_SEND": {
+        "addr": 1179880,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "FRAME_ACCU_NBYTES": 16,
+          "ENFRAG_TKEEP_ILLEGAL": 9,
+          "ENFRAG_ACCU_NBYTES": 8,
+          "APP_ACCU_NBYTES": 0
+        }
+      },
+      "FAULT_RECV": {
+        "addr": 1179884,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "INGRESS_BAD_UDP_CHECKSUM": 5,
+          "INGRESS_BAD_IP_CHECKSUM": 4,
+          "DECODE_LEN_URUN": 1,
+          "DECODE_IP_HDR_LEN": 0
+        }
+      },
+      "CLIENT_ID": {
+        "addr": 1179888,
+        "size": 4,
+        "readonly": false
+      },
+      "HW_CONFIG": {
+        "addr": 1179892,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "SEND_FRAG": 21,
+          "RECV_FRAG": 20,
+          "NCORES": [16, 19],
+          "ICMP": 14,
+          "ARP": 12,
+          "AUTH": [10, 11],
+          "NSESSIONS": 0
+        }
+      },
+      "HW_ID": {
+        "addr": 1179896,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "MODULE": 16,
+          "REVISION": 0
+        }
+      },
+      "LICENSE_ID": {
+        "addr": 1179900,
+        "size": 4,
+        "readonly": false
+      },
+      "APP_SEND_INTERFACE": {
+        "addr": 1179904,
+        "size": 28,
+        "readonly": false,
+        "fields": {
+          "TUSERX": [88, 199],
+          "TREADY": 87,
+          "TVALID": 86,
+          "TLAST": 85,
+          "TUSER": 84,
+          "TID": [76, 83],
+          "TDEST": [72, 75],
+          "TKEEP": [64, 71],
+          "TDATA": [0, 63]
+        }
+      },
+      "APP_RECV_INTERFACE": {
+        "addr": 1179936,
+        "size": 28,
+          "readonly": false,
+          "fields": {
+            "TUSERX": [88, 199],
+            "TREADY": 87,
+            "TVALID": 86,
+            "TLAST": 85,
+            "TUSER": 84,
+            "TID": [76, 83],
+            "TDEST": [72, 75],
+            "TKEEP": [64, 71],
+            "TDATA": [0, 63]
+          }
+      },
+      "MAC_SEND_INTERFACE": {
+        "addr": 1179968,
+        "size": 12,
+        "readonly": false,
+        "fields": {
+          "TUSERX": [88, 95],
+          "TREADY": 87,
+          "TVALID": 86,
+          "TLAST": 85,
+          "TUSER": 84,
+          "TID": [76, 83],
+          "TDEST": [72, 75],
+          "TKEEP": [64, 71],
+          "TDATA": [0, 63]
+        }
+      },
+      "MAC_RECV_INTERFACE": {
+        "addr": 1179984,
+        "size": 12,
+        "readonly": false,
+        "fields": {
+          "TUSERX": [88, 95],
+          "TREADY": 87,
+          "TVALID": 86,
+          "TLAST": 85,
+          "TUSER": 84,
+          "TID": [76, 83],
+          "TDEST": [72, 75],
+          "TKEEP": [64, 71],
+          "TDATA": [0, 63]
+        }
+      },
+      "MAC_NFRAMES_SENT": {
+        "addr": 1180128,
+        "size": 6,
+        "readonly": false
+      },
+      "MAC_NBYTES_SENT": {
+        "addr": 1180136,
+        "size": 6,
+        "readonly": false
+      },
+      "MAC_NFRAMES_RCVD": {
+        "addr": 1180144,
+        "size": 6,
+        "readonly": false
+      },
+      "MAC_NBYTES_RCVD": {
+        "addr": 1180152,
+        "size": 6,
+        "readonly": false
+      },
+      "APP_NFRAMES_SENT": {
+        "addr": 1180160,
+        "size": 6,
+        "readonly": false
+      },
+      "APP_NBYTES_SENT": {
+        "addr": 1180168,
+        "size": 6,
+        "readonly": false
+      },
+      "APP_NFRAMES_RCVD": {
+        "addr": 1180176,
+        "size": 6,
+        "readonly": false
+      },
+      "APP_NBYTES_RCVD": {
+        "addr": 1180184,
+        "size": 6,
+        "readonly": false
+      },
+      "TOP_STATUS": {
+        "addr": 1180192,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "STATS_READY": 24,
+          "STATS_VALID": 16,
+          "STATS_FRAME": 2,
+          "STATS_COUNT": 0
+        }
+      },
+      "SEND_STATUS": {
+        "addr": 1180208,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "READY_DMA_FRAME": 31,
+          "READY_DMA_ENFRAG": 30,
+          "READY_DMA_INGRESS": 29,
+          "READY_FRAME": 28,
+          "READY_ENFRAG": 27,
+          "READY_APP": 26,
+          "READY_INGRESS": 25,
+          "READY_INPUT": 24,
+          "VALID_DMA_FRAME": 23,
+          "VALID_DMA_ENFRAG": 22,
+          "VALID_DMA_INGRESS": 21,
+          "VALID_FRAME": 20,
+          "VALID_ENFRAG": 19,
+          "VALID_APP": 18,
+          "VALID_INGRESS": 17,
+          "VALID_INPUT": 16,
+          "SEND_FRAME": [14, 15],
+          "SEND_ENFRAG": [12, 13],
+          "SEND_DMA_LEN": [10, 11],
+          "SEND_DMA": [8, 9],
+          "SEND_INGRESS": [4, 6],
+          "SEND_APP": 0
+        }
+      },
+      "RECV_STATUS": {
+        "addr": 1180224,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "READY_DMA_INGRESS": 29,
+          "READY_DMA_DECODE": 28,
+          "READY_APP": 27,
+          "READY_INGRESS": 26,
+          "READY_DECODE": 25,
+          "READY_MAC": 24,
+          "VALID_DMA_INGRESS": 21,
+          "VALID_DMA_DECODE": 20,
+          "VALID_APP": 19,
+          "VALID_INGRESS": 18,
+          "VALID_DECODE": 17,
+          "VALID_MAC": 16,
+          "RECV_APP": [12, 15],
+          "RECV_INGRESS": [6, 10],
+          "RECV_ALIGN": [4, 5],
+          "RECV_DECODE": [0, 2]
+        }
+      },
+      "AXI4_ROUTE": {
+        "addr": 1180240,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "RECV_TDEST": [24, 27],
+          "RECV_TID": [16, 23],
+          "SEND_TDEST": [0, 3]
+        }
+      },
+      "AXI_MONITOR": {
+        "addr": 1180248,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "CLI1_SEL": 20,
+          "CLI0_SEL": 16,
+          "APP_AXIS_RATE_TIMECONST_SEND": 11,
+          "APP_AXIS_RATE_TIMECONST_RECV": 10,
+          "MAC_AXIS_RATE_TIMECONST_SEND": 9,
+          "MAC_AXIS_RATE_TIMECONST_RECV": 8,
+          "APP_AXIS_RATE_RESET_SEND": 7,
+          "APP_AXIS_RATE_RESET_RECV": 6,
+          "MAC_AXIS_RATE_RESET_SEND": 5,
+          "MAC_AXIS_RATE_RESET_RECV": 4,
+          "RESET": 0
+        }
+      },
+      "APP_DATA_RATE_SEND": {
+        "addr": 1180368,
+        "size": 4,
+        "readonly": false
+      },
+      "APP_DATA_RATE_RECV": {
+        "addr": 1180372,
+        "size": 4,
+        "readonly": false
+      },
+      "MAC_DATA_RATE_SEND": {
+        "addr": 1180376,
+        "size": 4,
+        "readonly": false
+      },
+      "MAC_DATA_RATE_RECV": {
+        "addr": 1180380,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_FAULT_INJECT": {
+        "addr": 1180384,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "TRIG": 31,
+          "TRIG_UDP_LEN": 27,
+          "TRIG_UDP_CS": 26,
+          "TRIG_IP_LEN": 25,
+          "TRIG_IP_CS": 24,
+          "PRBS_UDP_LEN": 19,
+          "PRBS_UDP_CS": 18,
+          "PRBS_IP_LEN": 17,
+          "PRBS_IP_CS": 16,
+          "PRBS_RAND": 8,
+          "PRBS_BER": [0, 3]
+        }
+      },
+      "RECV_FAULT_INJECT": {
+        "addr": 1180392,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "TRIG": 31,
+          "TRIG_UDP_LEN": 27,
+          "TRIG_UDP_CS": 26,
+          "TRIG_IP_LEN": 25,
+          "TRIG_IP_CS": 24,
+          "PRBS_UDP_LEN": 19,
+          "PRBS_UDP_CS": 18,
+          "PRBS_IP_LEN": 17,
+          "PRBS_IP_CS": 16,
+          "PRBS_RAND": 8,
+          "PRBS_BER": [0, 3]
+        }
+      },
+      "PRBS_WORD": {
+        "addr": 1180400,
+        "size": 8,
+        "readonly": false
+      },
+      "AUTH_CONTROL": {
+        "addr": 1180416,
+        "size": 20,
+        "readonly": false
+      },
+      "AUTH_STATUS": {
+        "addr": 1180448,
+        "size": 16,
+        "readonly": true,
+        "fields": {
+          "GOOD": 15,
+          "TMAX": 0
+        }
+      },
+      "AUTH_FEATURE_REQUEST": {
+        "addr": 1180464,
+        "size": 4,
+        "readonly": false
+      },
+      "AUTH_FEATURE_PERMIT": {
+        "addr": 1180472,
+        "size": 4,
+        "readonly": false
+      },
+      "AUTH_CHALLENGE": {
+        "addr": 1180480,
+        "size": 32,
+        "readonly": false
+      },
+      "AUTH_RESPONSE": {
+        "addr": 1180512,
+        "size": 32,
+        "readonly": false
+      },
+      "ICMP_REQ_SEND": {
+        "addr": 1181696,
+        "size": 256,
+        "readonly": false
+      },
+      "ICMP_REQ_RECV": {
+        "addr": 1181952,
+        "size": 256,
+        "readonly": false
+      },
+      "ICMP_REPLY_RECV": {
+        "addr": 1182208,
+        "size": 256,
+        "readonly": false
+      },
+      "ICMP_REPLY_SEND": {
+        "addr": 1182464,
+        "size": 32,
+        "readonly": false
+      },
+      "ICMP_STATS_REQ_SENT": {
+        "addr": 1182496,
+        "size": 8,
+        "readonly": false
+      },
+      "ICMP_STATS_REQ_RCVD": {
+        "addr": 1182504,
+        "size": 8,
+        "readonly": false
+      },
+      "ICMP_STATS_REPLY_RCVD": {
+        "addr": 1182512,
+        "size": 8,
+        "readonly": false
+      },
+      "ICMP_STATS_REPLY_SENT": {
+        "addr": 1182520,
+        "size": 8,
+        "readonly": false
+      },
+      "ICMP_PAYLOAD": {
+        "addr": 1181720,
+        "size": 104,
+        "readonly": false
+      },
+      "ICMP_TIMESTAMP": {
+        "addr": 1181740,
+        "size": 4,
+        "readonly": false
+      },
+      "ICMP_SEQ": {
+        "addr": 1181738,
+        "size": 2,
+        "readonly": false
+      },
+      "ICMP_ID": {
+        "addr": 1181736,
+        "size": 2,
+        "readonly": false
+      },
+      "ICMP_IP_ID": {
+        "addr": 1181734,
+        "size": 2,
+        "readonly": false
+      },
+      "ICMP_NBYTES": {
+        "addr": 1181732,
+        "size": 2,
+        "readonly": false
+      },
+      "ICMP_IP_REMOTE": {
+        "addr": 1181728,
+        "size": 4,
+        "readonly": false
+      },
+      "ICMP_PROG": {
+        "addr": 1181727,
+        "size": 1,
+        "readonly": false
+      },
+      "ICMP_TDEST": {
+        "addr": 1181726,
+        "size": 1,
+        "readonly": false
+      },
+      "ICMP_MAC_REMOTE": {
+        "addr": 1181720,
+        "size": 6,
+        "readonly": false
+      },
+      "ARP_BASE": {
+        "addr": 1182720,
+        "size": 1024,
+        "readonly": false
+      },
+      "ARP_REQ_SEND": {
+        "addr": 1182720,
+        "size": 16,
+        "readonly": false
+      },
+      "ARP_REPLY_SEND": {
+        "addr": 1182736,
+        "size": 16,
+        "readonly": false
+      },
+      "ARP_REQ_RECV": {
+        "addr": 1182752,
+        "size": 16,
+        "readonly": false
+      },
+      "ARP_REPLY_RECV": {
+        "addr": 1182768,
+        "size": 16,
+        "readonly": false
+      },
+      "ARP_STATS_REQ_SENT": {
+        "addr": 1182784,
+        "size": 4,
+        "readonly": false
+      },
+      "ARP_STATS_REQ_RCVD": {
+        "addr": 1182788,
+        "size": 4,
+        "readonly": false
+      },
+      "ARP_STATS_REPLY_SENT": {
+        "addr": 1182792,
+        "size": 4,
+        "readonly": false
+      },
+      "ARP_STATS_REPLY_RCVD": {
+        "addr": 1182796,
+        "size": 4,
+        "readonly": false
+      },
+      "ARP_TABLE": {
+        "addr": 1182848,
+        "size": 4,
+        "readonly": false
+      },
+      "ARP_TIMESTAMP": {
+        "addr": 1182860,
+        "size": 4,
+        "readonly": false
+      },
+      "ARP_IP_REMOTE": {
+        "addr": 1182856,
+        "size": 4,
+        "readonly": false
+      },
+      "ARP_PROG": {
+        "addr": 1182855,
+        "size": 1,
+        "readonly": false,
+        "fields": {
+          "GRATUITOUS_ARP": 4,
+          "ARP_OPER": 0
+        }
+      },
+      "ARP_MAC_TDEST": {
+        "addr": 1182854,
+        "size": 1,
+        "readonly": false
+      },
+      "ARP_MAC_REMOTE": {
+        "addr": 1182848,
+        "size": 6,
+        "readonly": false
+      },
+      "AXI_MONITOR_MEM": {
+        "addr": 1183232,
+        "size": 4,
+        "readonly": false
+      },
+      "LICENSE_MEM": {
+        "addr": 1183744,
+        "size": 1024,
+        "readonly": false
+      },
+      "UCODE_IMEM": {
+        "addr": 1277952,
+        "size": 32768,
+        "readonly": false
+      },
+      "UCODE_DMEM": {
+        "addr": 1261568,
+        "size": 16384,
+        "readonly": false
+      },
+      "UCODE_BASE": {
+        "addr": 1245184,
+        "size": 65536,
+        "readonly": false
+      },
+      "STATS_SEND_BASE": {
+        "addr": 1196032,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_SEND_FRAMES": {
+        "addr": 1196032,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_SEND_BYTES": {
+        "addr": 1196040,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_RECV_FRAMES": {
+        "addr": 1200128,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_RECV_BYTES": {
+        "addr": 1200136,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_TIMESTAMP": {
+        "addr": 1204224,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_SEQUENCE": {
+        "addr": 1204228,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_LEN": {
+        "addr": 1204232,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "UDP": 16,
+          "IPID": 0
+        }
+      },
+      "STATS_AXI4_ROUTE": {
+        "addr": 1204236,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "TDEST": [16, 23],
+          "TID": [0, 15]
+        }
+      },
+      "STATS_PORT": {
+        "addr": 1204240,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "SRC": 16,
+          "DST": 0
+        }
+      },
+      "STATS_IP": {
+        "addr": 1204244,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_OPTS": {
+        "addr": 1204248,
+        "size": 8,
+        "readonly": false
+      },
+      "SMEM_OPTS": {
+        "addr": 1212416,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "SEND_MAC_TUSER": 5,
+          "SEND_FRAG_ENA": 4,
+          "TABLE_SEL_RECV_TDEST": 3,
+          "TABLE_SEL_RECV_TID": 2,
+          "TABLE_SEL_SEND_TDEST": 1,
+          "TABLE_IN_USE": 0
+        }
+      },
+      "SMEM_AXI4_ROUTE": {
+        "addr": 1212420,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "RECV_TDEST": [24, 27],
+          "RECV_TID": [16, 23],
+          "SEND_TID": [8, 11],
+          "SEND_TDEST": [0, 3]
+        }
+      },
+      "SMEM_PORT_LOCAL": {
+        "addr": 1212424,
+        "size": 2,
+        "readonly": false
+      },
+      "SMEM_PORT_REMOTE": {
+        "addr": 1212426,
+        "size": 2,
+        "readonly": false
+      },
+      "SMEM_IP_REMOTE": {
+        "addr": 1212428,
+        "size": 2,
+        "readonly": false
+      },
+      "SMEM_MAC_REMOTE": {
+        "addr": 1212432,
+        "size": 4,
+        "readonly": false
+      },
+      "HASH_MAP_BASE": {
+        "addr": 1241088,
+        "size": 4,
+        "readonly": false
+      }
+    },
+    "TESTAPP": {
+      "CTRL": {
+        "addr": 1310720,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "AXIS_RATE_CONT": 29,
+          "AXIS_RATE": 28,
+          "STATS_SPEED": 24,
+          "FREE_RUN": 16,
+          "TRANSACTION_SEL": [12, 13],
+          "RECV_DECODE_TDEST": 10,
+          "RECV_MONITOR_SEL": 9,
+          "SEND_MONITOR_SEL": 8,
+          "SEND_NMUX_RESET": 4,
+          "RECV_STATS_RESET": 3,
+          "SEND_STATS_RESET": 2,
+          "RECV_FIFO_RESET": 1,
+          "SEND_FIFO_RESET": 0
+        }
+      },
+      "STATUS": {
+        "addr": 1310724,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "SEND_BUSY": 0,
+          "RECV_BUSY": 1
+        }
+      },
+      "SEND_PATTERN": {
+        "addr": 1310732,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "ONLY": 16,
+          "SESSION": 8,
+          "RANDLEN": 5,
+          "CRC": 4,
+          "SESSION_ENCODE": 3,
+          "NBO": 2,
+          "SEL": [0, 1]
+        }
+      },
+      "SEND_NBYTES": {
+        "addr": 1310736,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_NREPS": {
+        "addr": 1310740,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_ENA": {
+        "addr": 1310744,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_BUSY": {
+        "addr": 1310748,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_TID": {
+        "addr": 1310752,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_TDEST": {
+        "addr": 1310760,
+        "size": 4,
+        "readonly": false
+      },
+      "NBYTES_SENT": {
+        "addr": 1310768,
+        "size": 8,
+        "readonly": false
+      },
+      "NFRAMES_SENT": {
+        "addr": 1310776,
+        "size": 8,
+        "readonly": false
+      },
+      "NBYTES_RCVD": {
+        "addr": 1310784,
+        "size": 8,
+        "readonly": false
+      },
+      "NFRAMES_RCVD": {
+        "addr": 1310792,
+        "size": 8,
+        "readonly": false
+      },
+      "RECV_INTERFACE": {
+        "addr": 1310800,
+        "size": 24,
+        "readonly": false,
+        "fields": {
+          "TREADY": 87,
+          "TVALID": 86,
+          "TLAST": 85,
+          "TUSER": 84,
+          "TID": [76, 83],
+          "TDEST": [72, 75],
+          "TKEEP": [64, 71],
+          "TDATA": [0, 63]
+        }
+      },
+      "SEND_INTERFACE": {
+        "addr": 1310832,
+        "size": 24,
+        "readonly": false,
+        "fields": {
+          "TREADY": 87,
+          "TVALID": 86,
+          "TLAST": 85,
+          "TUSER": 84,
+          "TID": [76, 83],
+          "TDEST": [72, 75],
+          "TKEEP": [64, 71],
+          "TDATA": [0, 63]
+        }
+      },
+      "SEND_RATE": {
+        "addr": 1310864,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_RATE": {
+        "addr": 1310868,
+        "size": 4,
+        "readonly": false
+      },
+      "TIMER_SENT": {
+        "addr": 1310880,
+        "size": 4,
+        "readonly": false
+      },
+      "TIMER_RCVD": {
+        "addr": 1310884,
+        "size": 4,
+        "readonly": false
+      },
+      "LOOPBACK": {
+        "addr": 1310888,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_CRC_PASS": {
+        "addr": 1310896,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_CRC_FAIL": {
+        "addr": 1310904,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_ENA": {
+        "addr": 1310916,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_BUSY": {
+        "addr": 1310920,
+        "size": 4,
+        "readonly": false
+      },
+      "TIMER": {
+        "addr": 1310924,
+        "size": 4,
+        "readonly": false
+      },
+      "FAULT": {
+        "addr": 1310944,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "FLOW_STALL_SEND": 0,
+          "FLOW_STALL_RECV": 1
+        }
+      },
+      "DEBUG_TOP": {
+        "addr": 1310960,
+        "size": 4,
+        "readonly": false
+      },
+      "HW_CONFIG": {
+        "addr": 1310964,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "INPUT_FIFO": 18,
+          "OUTPUT_FIFO": 16,
+          "NUM_STREAMS": 0
+        }
+      },
+      "HW_ID": {
+        "addr": 1310968,
+        "size": 4,
+        "readonly": false
+      },
+      "LICENSE_ID": {
+        "addr": 1310972,
+        "size": 4,
+        "readonly": false
+      },
+      "SCRATCHPAD": {
+        "addr": 1310976,
+        "size": 32,
+        "readonly": false
+      },
+      "SEND_STREAM_RESET": {
+        "addr": 1311008,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STREAM_RESET": {
+        "addr": 1311012,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_STATS_CLEAR": {
+        "addr": 1311016,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_CLEAR": {
+        "addr": 1311020,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_FLOW": {
+        "addr": 1311104,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_FLOW": {
+        "addr": 1311120,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_STREAM_DUTY": {
+        "addr": 1311232,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STREAM_DUTY": {
+        "addr": 1311360,
+        "size": 4,
+        "readonly": false
+      },
+      "DEBUG_SEND": {
+        "addr": 1311488,
+        "size": 64,
+        "readonly": false
+      },
+      "DEBUG_RECV": {
+        "addr": 1311616,
+        "size": 64,
+        "readonly": false
+      },
+      "LICENSE_MEM": {
+        "addr": 1314816,
+        "size": 8192,
+        "readonly": false
+      },
+      "SEND_STATS_NBYTES": {
+        "addr": 1327104,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_STATS_NFRAMES": {
+        "addr": 1327112,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_STATS_TIMESTAMP": {
+        "addr": 1327136,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_STATS_RECENT": {
+        "addr": 1327144,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_STATS_RATE": {
+        "addr": 1327152,
+        "size": 4,
+        "readonly": false
+      },
+      "SEND_STATS_FAULT": {
+        "addr": 1327156,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_NBYTES": {
+        "addr": 1335296,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_NFRAMES": {
+        "addr": 1335304,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_CRC_PASS": {
+        "addr": 1335312,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_CRC_FAIL": {
+        "addr": 1335320,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_TIMESTAMP": {
+        "addr": 1335328,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_RECENT": {
+        "addr": 1335336,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_RATE": {
+        "addr": 1335344,
+        "size": 4,
+        "readonly": false
+      },
+      "RECV_STATS_FAULT": {
+        "addr": 1335348,
+        "size": 4,
+        "readonly": false
+      }
+    },
+    "IIC": {
+      "CTRL": {
+        "addr": 786432,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "SDA_OUT": 11,
+          "SCL_OUT": 10,
+          "OVERRIDE": 4,
+          "RESET": 0
+        }
+      },
+      "STATUS": {
+        "addr": 786436,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "SDA_OUT": 11,
+          "SCL_OUT": 10,
+          "SDA_IN": 9,
+          "SCL_IN": 8,
+          "SEND_ACK": 0
+        }
+      },
+      "WDATA": {
+        "addr": 786440,
+        "size": 4,
+        "readonly": false
+      },
+      "RDATA": {
+        "addr": 786444,
+        "size": 4,
+        "readonly": false
+      },
+      "COMMAND": {
+        "addr": 786448,
+        "size": 4,
+        "readonly": false
+      },
+      "GPIO_I": {
+        "addr": 786452,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "INT_L": 4,
+          "MOD_PRES_L": 0
+        }
+      },
+      "GPIO_O": {
+        "addr": 786456,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "RESET": 4,
+          "LPMODE": 0
+        }
+      },
+      "CHAN": {
+        "addr": 786460,
+        "size": 4,
+        "readonly": false
+      },
+      "FAULT": {
+        "addr": 786464,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "START1": 1,
+          "START0": 0
+        }
+      },
+      "CLOCKA_PERIOD": {
+        "addr": 786480,
+        "size": 4,
+        "readonly": false
+      },
+      "CLOCKB_PERIOD": {
+        "addr": 786484,
+        "size": 4,
+        "readonly": false
+      },
+      "CLOCKA_EDGE_COUNT": {
+        "addr": 786488,
+        "size": 4,
+        "readonly": false
+      },
+      "CLOCKB_EDGE_COUNT": {
+        "addr": 786492,
+        "size": 4,
+        "readonly": false
+      },
+      "LICENSE_ID": {
+        "addr": 786684,
+        "size": 4,
+        "readonly": false
+      }
+    },
+    "AUTH": {
+      "CTRL": {
+        "addr": 1114112,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "RESET": 0,
+          "MESSAGE_RESET": 1,
+          "REMOTE_REG_AUTH": 4,
+          "S_HOST_M_AXI_RESET": 8,
+          "S_AXI_RESET_M_HOST": 9,
+          "M_AXI_RVALID_FORCE": 16
+        }
+      },
+      "STATUS": {
+        "addr": 1114116,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "STATE": 28,
+          "WATCHDOG_TIMEOUT": 24,
+          "FEATURE_UNDEF": 21,
+          "TIMELOCK": 21,
+          "PERMIT_REFUSED": 20,
+          "LOCATION_REJECTED": 19,
+          "PUF_DONE": 17,
+          "INIT_BUSY": 16,
+          "GOOD": 15,
+          "TMAX": 0
+        }
+      },
+      "FEATURE_CHECKSUM": {
+        "addr": 1114120,
+        "size": 4,
+        "readonly": false
+      },
+      "FEATURE_REQUEST": {
+        "addr": 1114128,
+        "size": 4,
+        "readonly": false
+      },
+      "FEATURE_PERMIT": {
+        "addr": 1114136,
+        "size": 4,
+        "readonly": false
+      },
+      "DIGEST": {
+        "addr": 1114144,
+        "size": 20,
+        "readonly": false
+      },
+      "PUF_ID": {
+        "addr": 1114176,
+        "size": 12,
+        "readonly": false
+      },
+      "CLI_CHALLENGE": {
+        "addr": 1114188,
+        "size": 4,
+        "readonly": false
+      },
+      "CLI_RESPONSE": {
+        "addr": 1114192,
+        "size": 4,
+        "readonly": false
+      },
+      "CLI_FAULT": {
+        "addr": 1114200,
+        "size": 4,
+        "readonly": false
+      },
+      "CHALLENGE": {
+        "addr": 1114208,
+        "size": 32,
+        "readonly": false
+      },
+      "RESPONSE": {
+        "addr": 1114240,
+        "size": 20,
+        "readonly": false
+      },
+      "NUM_CLIENTS": {
+        "addr": 1114272,
+        "size": 4,
+        "readonly": false
+      },
+      "FEATURE_EVENTS": {
+        "addr": 1114288,
+        "size": 4,
+        "readonly": false
+      },
+      "CHALLENGE_EVENTS": {
+        "addr": 1114292,
+        "size": 4,
+        "readonly": false
+      },
+      "CLIENT_ID": {
+        "addr": 1114352,
+        "size": 4,
+        "readonly": false
+      },
+      "HW_CONFIG": {
+        "addr": 1114356,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "NUM_FEATURES": 4,
+          "NUM_CLIENTS": 0
+        }
+      },
+      "HW_ID": {
+        "addr": 1114360,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "MODULE": 16,
+          "REVISION": 0
+        }
+      },
+      "LICENSE_ID": {
+        "addr": 1114364,
+        "size": 4,
+        "readonly": false
+      },
+      "DEBUG": {
+        "addr": 1114368,
+        "size": 4,
+        "readonly": false
+      },
+      "MEM_BASE": {
+        "addr": 1116160,
+        "size": 4,
+        "readonly": false
+      },
+      "MEM_FEATURE": {
+        "addr": 1116160,
+        "size": 4,
+        "readonly": false
+      },
+      "MEM_BASEADDR": {
+        "addr": 1116224,
+        "size": 4,
+        "readonly": false
+      },
+      "LICENSE_MEM": {
+        "addr": 1118208,
+        "size": 1024,
+        "readonly": false
+      }
+    },
+    "AURORA": {
+      "3": {
+        "CTRL": {
+          "addr": 262144,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "RATE": [16, 17],
+            "S_TREADY_HI": 9,
+            "M_TVALID_LO": 8,
+            "WORD_REVERSE": 4,
+            "RESET": 0
+          }
+        },
+        "STATUS": {
+          "addr": 262148,
+          "size": 4,
+          "readonly": true
+        },
+        "REFCLK_FREQ": {
+          "addr": 262156,
+          "size": 4,
+          "readonly": false
+        },
+        "RECV_TDEST": {
+          "addr": 262160,
+          "size": 4,
+          "readonly": false
+        },
+        "RECV_TID": {
+          "addr": 262176,
+          "size": 4,
+          "readonly": false
+        },
+        "CORE_CTRL": {
+          "addr": 262208,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "DRP_START": 5,
+            "RX_CDR_OVERRIDE": 4,
+            "POWER_DOWN": 3,
+            "PMA_INIT": 2,
+            "RX_SYSRESET": 1,
+            "TX_SYSRESET": 0
+          }
+        },
+        "CORE_STATUS": {
+          "addr": 262272,
+          "size": 4,
+          "readonly": true,
+          "fields": {
+            "TX_HARD_ERR": 7,
+            "TX_SOFT_ERR": 6,
+            "TX_CHANNEL_UP": 5,
+            "TX_LANE_UP": 4,
+            "RX_HARD_ERR": 3,
+            "RX_SOFT_ERR": 2,
+            "RX_CHANNEL_UP": 1,
+            "RX_LANE_UP": 0
+          }
+        },
+        "INTERFACE": {
+          "addr": 262336,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "SEND_CH1_TREADY": 7,
+            "SEND_CH1_TVALID": 6,
+            "SEND_CH0_TREADY": 5,
+            "SEND_CH0_TVALID": 4,
+            "RECV_CH1_TREADY": 3,
+            "RECV_CH1_TVALID": 2,
+            "RECV_CH0_TREADY": 1,
+            "RECV_CH0_TVALID": 0
+          }
+        },
+        "CLIENT_ID": {
+          "addr": 262384,
+          "size": 4,
+          "readonly": false
+        },
+        "HW_CONFIG": {
+          "addr": 262388,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "NLANES": 0
+          }
+        },
+        "HW_ID": {
+          "addr": 262392,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "MODULE": 16,
+            "REVISION": 0
+          }
+        },
+        "LICENSE_ID": {
+          "addr": 262396,
+          "size": 4,
+          "readonly": false
+        },
+        "DRP0_BASE": {
+          "addr": 266240,
+          "size": 4,
+          "readonly": false
+        },
+        "DRP1_BASE": {
+          "addr": 267264,
+          "size": 4,
+          "readonly": false
+        },
+        "DRP_RXOUT": {
+          "addr": 262540,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "DIV": [0, 2]
+          }
+        },
+        "DRP_TXOUT": {
+          "addr": 262640,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "DIV": [8, 10]
+          }
+        }
+      },
+      "2": {
+        "CTRL": {
+          "addr": 327680,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "RATE": [16, 17],
+            "S_TREADY_HI": 9,
+            "M_TVALID_LO": 8,
+            "WORD_REVERSE": 4,
+            "RESET": 0
+          }
+        },
+        "STATUS": {
+          "addr": 327684,
+          "size": 4,
+          "readonly": true
+        },
+        "REFCLK_FREQ": {
+          "addr": 327692,
+          "size": 4,
+          "readonly": false
+        },
+        "RECV_TDEST": {
+          "addr": 327696,
+          "size": 4,
+          "readonly": false
+        },
+        "RECV_TID": {
+          "addr": 327712,
+          "size": 4,
+          "readonly": false
+        },
+        "CORE_CTRL": {
+          "addr": 327744,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "DRP_START": 5,
+            "RX_CDR_OVERRIDE": 4,
+            "POWER_DOWN": 3,
+            "PMA_INIT": 2,
+            "RX_SYSRESET": 1,
+            "TX_SYSRESET": 0
+          }
+        },
+        "CORE_STATUS": {
+          "addr": 327808,
+          "size": 4,
+          "readonly": true,
+          "fields": {
+            "TX_HARD_ERR": 7,
+            "TX_SOFT_ERR": 6,
+            "TX_CHANNEL_UP": 5,
+            "TX_LANE_UP": 4,
+            "RX_HARD_ERR": 3,
+            "RX_SOFT_ERR": 2,
+            "RX_CHANNEL_UP": 1,
+            "RX_LANE_UP": 0
+          }
+        },
+        "INTERFACE": {
+          "addr": 327872,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "SEND_CH1_TREADY": 7,
+            "SEND_CH1_TVALID": 6,
+            "SEND_CH0_TREADY": 5,
+            "SEND_CH0_TVALID": 4,
+            "RECV_CH1_TREADY": 3,
+            "RECV_CH1_TVALID": 2,
+            "RECV_CH0_TREADY": 1,
+            "RECV_CH0_TVALID": 0
+          }
+        },
+        "CLIENT_ID": {
+          "addr": 327920,
+          "size": 4,
+          "readonly": false
+        },
+        "HW_CONFIG": {
+          "addr": 327924,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "NLANES": 0
+          }
+        },
+        "HW_ID": {
+          "addr": 327928,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "MODULE": 16,
+            "REVISION": 0
+          }
+        },
+        "LICENSE_ID": {
+          "addr": 327932,
+          "size": 4,
+          "readonly": false
+        },
+        "DRP0_BASE": {
+          "addr": 331776,
+          "size": 4,
+          "readonly": false
+        },
+        "DRP1_BASE": {
+          "addr": 332800,
+          "size": 4,
+          "readonly": false
+        },
+        "DRP_RXOUT": {
+          "addr": 328076,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "DIV": [0, 2]
+          }
+        },
+        "DRP_TXOUT": {
+          "addr": 328176,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "DIV": [8, 10]
+          }
+        }
+      }
+    },
+    "FRAMER": {
+      "3": {
+        "CTRL": {
+          "addr": 458752,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "WORD_ORDER": 7,
+            "CHAN_ORDER": 5,
+            "BIT_REVERSE": 4,
+            "BYPASS": 3,
+            "ALLOW_DISCARD": 2,
+            "STATS_CLRSC": 1,
+            "RESET": 0
+          }
+        },
+        "STATUS": {
+          "addr": 458756,
+          "size": 4,
+          "readonly": true,
+          "fields": {
+            "INPUT_DISCARD": 3,
+            "FRAME_STATE": 0
+          }
+        },
+        "MODE": {
+          "addr": 458760,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "CHAN": 0
+          }
+        },
+        "LEN_LIMIT": {
+          "addr": 458764,
+          "size": 4,
+          "readonly": false
+        },
+        "FRAME_NUMBER": {
+          "addr": 458768,
+          "size": 4,
+          "readonly": false
+        },
+        "FRAME_TIME": {
+          "addr": 458776,
+          "size": 4,
+          "readonly": false
+        },
+        "TDEST": {
+          "addr": 458784,
+          "size": 4,
+          "readonly": false
+        },
+        "TID": {
+          "addr": 458800,
+          "size": 4,
+          "readonly": false
+        },
+        "FIFO0_FILL": {
+          "addr": 458864,
+          "size": 4,
+          "readonly": false
+        },
+        "FIFO1_FILL": {
+          "addr": 458868,
+          "size": 4,
+          "readonly": false
+        },
+        "FIFO2_FILL": {
+          "addr": 458872,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_CH0_NBYTES": {
+          "addr": 458880,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_CH0_NFRAMES": {
+          "addr": 458888,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_CH1_NBYTES": {
+          "addr": 458896,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_CH1_NFRAMES": {
+          "addr": 458904,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_OUT_NBYTES": {
+          "addr": 458912,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_OUT_NFRAMES": {
+          "addr": 458920,
+          "size": 4,
+          "readonly": false
+        },
+        "INTERFACE": {
+          "addr": 458944,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "OUT_TREADY": 5,
+            "OUT_TVALID": 4,
+            "CH1_TREADY": 3,
+            "CH1_TVALID": 2,
+            "CH0_TREADY": 1,
+            "CH0_TVALID": 0
+          }
+        },
+        "FAULT": {
+          "addr": 458976,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "LEN_OOB": 1,
+            "LEN_MISMATCH": 0
+          }
+        },
+        "CLIENT_ID": {
+          "addr": 458992,
+          "size": 4,
+          "readonly": false
+        },
+        "HW_CONFIG": {
+          "addr": 458996,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "NCHAN": 0
+          }
+        },
+        "HW_ID": {
+          "addr": 459000,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "MODULE": 16,
+            "REVISION": 0
+          }
+        },
+        "LICENSE_ID": {
+          "addr": 459004,
+          "size": 4,
+          "readonly": false
+        }
+      },
+      "2": {
+        "CTRL": {
+          "addr": 524288,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "WORD_ORDER": 7,
+            "CHAN_ORDER": 5,
+            "BIT_REVERSE": 4,
+            "BYPASS": 3,
+            "ALLOW_DISCARD": 2,
+            "STATS_CLRSC": 1,
+            "RESET": 0
+          }
+        },
+        "STATUS": {
+          "addr": 524292,
+          "size": 4,
+          "readonly": true,
+          "fields": {
+            "INPUT_DISCARD": 3,
+            "FRAME_STATE": 0
+          }
+        },
+        "MODE": {
+          "addr": 524296,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "CHAN": 0
+          }
+        },
+        "LEN_LIMIT": {
+          "addr": 524300,
+          "size": 4,
+          "readonly": false
+        },
+        "FRAME_NUMBER": {
+          "addr": 524304,
+          "size": 4,
+          "readonly": false
+        },
+        "FRAME_TIME": {
+          "addr": 524312,
+          "size": 4,
+          "readonly": false
+        },
+        "TDEST": {
+          "addr": 524320,
+          "size": 4,
+          "readonly": false
+        },
+        "TID": {
+          "addr": 524336,
+          "size": 4,
+          "readonly": false
+        },
+        "FIFO0_FILL": {
+          "addr": 524400,
+          "size": 4,
+          "readonly": false
+        },
+        "FIFO1_FILL": {
+          "addr": 524404,
+          "size": 4,
+          "readonly": false
+        },
+        "FIFO2_FILL": {
+          "addr": 524408,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_CH0_NBYTES": {
+          "addr": 524416,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_CH0_NFRAMES": {
+          "addr": 524424,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_CH1_NBYTES": {
+          "addr": 524432,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_CH1_NFRAMES": {
+          "addr": 524440,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_OUT_NBYTES": {
+          "addr": 524448,
+          "size": 4,
+          "readonly": false
+        },
+        "STATS_OUT_NFRAMES": {
+          "addr": 524456,
+          "size": 4,
+          "readonly": false
+        },
+        "INTERFACE": {
+          "addr": 524480,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "OUT_TREADY": 5,
+            "OUT_TVALID": 4,
+            "CH1_TREADY": 3,
+            "CH1_TVALID": 2,
+            "CH0_TREADY": 1,
+            "CH0_TVALID": 0
+          }
+        },
+        "FAULT": {
+          "addr": 524512,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "LEN_OOB": 1,
+            "LEN_MISMATCH": 0
+          }
+        },
+        "CLIENT_ID": {
+          "addr": 524528,
+          "size": 4,
+          "readonly": false
+        },
+        "HW_CONFIG": {
+          "addr": 524532,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "NCHAN": 0
+          }
+        },
+        "HW_ID": {
+          "addr": 524536,
+          "size": 4,
+          "readonly": false,
+          "fields": {
+            "MODULE": 16,
+            "REVISION": 0
+          }
+        },
+        "LICENSE_ID": {
+          "addr": 524540,
+          "size": 4,
+          "readonly": false
+        }
+      }
+    },
+    "TRIGGER": {
+      "CTRL": {
+        "addr": 589824,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "CLEAR_STATS": 2,
+          "FRAME_NUM_INSERT": 1,
+          "RESET": 0
+        }
+      },
+      "STATUS": {
+        "addr": 589828,
+        "size": 4,
+        "readonly": true,
+        "fields": {
+          "GPIO": 4,
+          "STATE": 0
+        }
+      },
+      "MODE": {
+        "addr": 589832,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "LEVEL": 8,
+          "EVENT": 4,
+          "PROG": 0
+        }
+      },
+      "EVENT_COUNT": {
+        "addr": 589836,
+        "size": 4,
+        "readonly": false
+      },
+      "FRAME_NUMBER": {
+        "addr": 589840,
+        "size": 4,
+        "readonly": false
+      },
+      "PROG_N": {
+        "addr": 589848,
+        "size": 4,
+        "readonly": false
+      },
+      "PROG_M": {
+        "addr": 589852,
+        "size": 4,
+        "readonly": false
+      },
+      "SIM_MODE": {
+        "addr": 589856,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "SRC": 0
+        }
+      },
+      "SIM_PERIOD_US": {
+        "addr": 589860,
+        "size": 4,
+        "readonly": false
+      },
+      "GPIO_IN": {
+        "addr": 589872,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "VETO": 2,
+          "SYNC": 1,
+          "TRIG": 0
+        }
+      },
+      "GPIO_OUT": {
+        "addr": 589876,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "VETO": 2,
+          "SYNC": 1,
+          "TRIG": 0
+        }
+      },
+      "GPIO_ENA": {
+        "addr": 589880,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "VETO": 2,
+          "SYNC": 1,
+          "TRIG": 0
+        }
+      },
+      "STATS_IN_NFRAMES": {
+        "addr": 589960,
+        "size": 4,
+        "readonly": false
+      },
+      "STATS_OUT_NFRAMES": {
+        "addr": 589992,
+        "size": 4,
+        "readonly": false
+      },
+      "INTERFACE": {
+        "addr": 590016,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "M_TREADY": 3,
+          "M_TVALID": 2,
+          "S_TREADY": 1,
+          "S_TVALID": 0
+        }
+      },
+      "CLIENT_ID": {
+        "addr": 590064,
+        "size": 4,
+        "readonly": false
+      },
+      "HW_CONFIG": {
+        "addr": 590068,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "NCHAN": 0
+        }
+      },
+      "HW_ID": {
+        "addr": 590072,
+        "size": 4,
+        "readonly": false,
+        "fields": {
+          "MODULE": 16,
+          "REVISION": 0
+        }
+      },
+      "LICENSE_ID": {
+        "addr": 590076,
+        "size": 4,
+        "readonly": false
+      }
+    }
+  }
